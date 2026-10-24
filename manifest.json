@@ -1,0 +1,23 @@
+{
+  "name": "Loadmaster Pro - P&B KC-390",
+  "short_name": "P&B KC-390",
+  "description": "Aplicativo de cálculo de Peso e Balanceamento do KC-390 para Loadmasters.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#f3f4f6",
+  "theme_color": "#003366",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
