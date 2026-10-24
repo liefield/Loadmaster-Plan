@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Loadmaster Pro - P&B KC-390</title>
+    
+    <link rel="manifest" href="./manifest.json?v=2">
+    <meta name="theme-color" content="#003366">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="P&B KC-390">
+    <link rel="apple-touch-icon" href="./ios-icon.png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { --fab-blue: #003366; --fab-light: #4c72a4; }
+        body { background-color: #f3f4f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
+        .bg-fab { background-color: var(--fab-blue); }
+        .text-fab { color: var(--fab-blue); }
+        .tab-active { border-bottom: 4px solid var(--fab-blue); font-weight: bold; color: var(--fab-blue); }
+        .tab-inactive { color: #6b7280; }
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+    </style>
+</head>
+<body class="h-screen flex flex-col">
+
+    <div id="loginScreen" class="flex-1 flex flex-col justify-center items-center px-6">
+        <div class="w-full max-w-sm bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+            <div class="text-center mb-8">
+                <img src="./ios-icon.png" alt="Logo P&B" class="w-24 h-24 mx-auto mb-4 rounded-2xl shadow-md">
+                <h1 class="text-3xl font-extrabold text-fab mb-2">✈️ KC-390 P&B</h1>
+                <p class="text-gray-500 text-sm">Acesso Restrito - Loadmasters</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-5" onsubmit="event.preventDefault(); handleLogin();">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">E-mail</label>
+                    <input type="email" id="email" required class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800 outline-none" placeholder="militar@fab.mil.br">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Senha</label>
+                    <input type="password" id="password" required class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800 outline-none" placeholder="••••••••">
+                </div>
+                <button type="submit" class="w-full bg-fab text-white p-3 rounded-lg font-bold hover:bg-blue-900 transition">ENTRAR</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="mainApp" class="hidden flex-col h-full">
+        <header class="bg-fab text-white p-4 shadow-md flex justify-between items-center z-10 pt-safe">
+            <h1 class="text-lg font-bold">Carta E - KC-390</h1>
+            <button onclick="handleLogout()" class="text-sm bg-red-600 px-3 py-1 rounded hover:bg-red-700">Sair</button>
+        </header>
+
+        <nav class="bg-white flex justify-around shadow z-10 sticky top-0 text-sm">
+            <button onclick="switchTab('tab-aeronave')" id="btn-tab-aeronave" class="flex-1 py-3 tab-active text-center">Aeronave</button>
+            <button onclick="switchTab('tab-operacional')" id="btn-tab-operacional" class="flex-1 py-3 tab-inactive text-center">Missão</button>
+            <button onclick="switchTab('tab-resultado')" id="btn-tab-resultado" class="flex-1 py-3 tab-inactive text-center">Resultados</button>
+        </nav>
+
+        <main class="flex-1 overflow-y-auto p-4 pb-20">
+            <!-- ABA 1: Dados Mestres da Aeronave -->
+            <section id="tab-aeronave" class="space-y-4">
+                <div class="bg-white p-4 rounded-xl shadow">
+                    <h2 class="font-bold text-fab mb-4 border-b pb-2">Dados Básicos (Basic Weight)</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs text-gray-500 uppercase">Matrícula da Aeronave</label>
+                            <select id="anvMatricula" onchange="changeAircraft()" class="w-full p-2 border-b-2 border-gray-300 focus:border-blue-800 outline-none text-lg font-semibold bg-white">
+                                <option value="2853">FAB 2853</option>
+                                <option value="2854">FAB 2854</option>
+                                <option value="2855">FAB 2855</option>
+                                <option value="2856">FAB 2856</option>
+                                <option value="2857">FAB 2857</option>
+                                <option value="2858">FAB 2858</option>
+                                <option value="2859">FAB 2859</option>
+                                <option value="2860">FAB 2860</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs text-gray-500 uppercase">Peso Básico (kg)</label>
+                                <input type="number" id="basicWeight" value="51168" oninput="calculate()" class="w-full p-2 bg-gray-50 border rounded text-lg font-bold">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 uppercase">Momento Básico</label>
+                                <input type="number" id="basicMoment" value="937871" oninput="calculate()" class="w-full p-2 bg-gray-50 border rounded text-lg font-bold">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ABA 2: Operacional / Cargas -->
+            <section id="tab-operacional" class="hidden space-y-6">
+                
+                <div class="bg-white p-4 rounded-xl shadow mb-2">
+                    <h3 class="font-bold text-fab border-b pb-2 mb-3">Configuração de Pallets</h3>
+                    <select id="configPallets" onchange="renderForm()" class="w-full p-2 border rounded bg-gray-50 font-semibold text-gray-700 outline-none">
+                        <option value="108">Pallets 108" (5 posições + 2 Rampa)</option>
+                        <option value="88">Pallets 88" (4 posições + 2 Rampa)</option>
+                    </select>
+                </div>
+
+                <!-- Gerado dinamicamente via JS -->
+                <div id="dynamicInputs"></div>
+            </section>
+
+            <!-- ABA 3: Resultados e Limites -->
+            <section id="tab-resultado" class="hidden space-y-4">
+                <div class="bg-white p-5 rounded-xl shadow-lg border-t-4 border-blue-800">
+                    <h2 class="text-xl font-black text-center mb-6 text-gray-800">Resumo de P&B (MZFW)</h2>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label class="block text-xs text-gray-500 uppercase font-bold">Tripulantes (Qtd)</label>
+                            <input type="number" id="qtdTripulantes" placeholder="Ex: 5" class="w-full p-2 border-b-2 border-gray-300 text-center text-lg font-bold outline-none focus:border-blue-800">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-500 uppercase font-bold">Passageiros (Qtd)</label>
+                            <input type="number" id="qtdPassageiros" placeholder="Ex: 20" class="w-full p-2 border-b-2 border-gray-300 text-center text-lg font-bold outline-none focus:border-blue-800">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 text-center mb-6">
+                        <div class="p-3 bg-gray-100 rounded-lg">
+                            <p class="text-xs text-gray-500 uppercase">Peso Total (kg)</p>
+                            <p id="resWeight" class="text-2xl font-bold text-blue-900">0</p>
+                        </div>
+                        <div class="p-3 bg-gray-100 rounded-lg">
+                            <p class="text-xs text-gray-500 uppercase">Momento Total</p>
+                            <p id="resMoment" class="text-xl font-bold text-gray-700">0</p>
+                        </div>
+                        <div class="p-3 bg-gray-100 rounded-lg">
+                            <p class="text-xs text-gray-500 uppercase">CG (Metros)</p>
+                            <p id="resCG" class="text-xl font-bold text-gray-700">0.000</p>
+                        </div>
+                        <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <p class="text-xs text-blue-800 font-bold uppercase">% MAC</p>
+                            <p id="resMAC" class="text-2xl font-black text-blue-900">0.00%</p>
+                        </div>
+                    </div>
+
+                    <div id="mzfwAlert" class="p-4 rounded-lg font-bold text-center text-white bg-green-500 shadow">
+                        MZFW DENTRO DO LIMITE (Máx 73.500 kg)
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Firebase SDK / Scripts omitidos por brevidade e depois preenchidos -->
+    <script>
+        const IN_TO_M = 0.0254;
+        const LEMAC = 16.474;
+        const MAC = 4.646;
+        const MZFW_MAX = 73500;
+
+        const aeronaves = {
+            "2853": { bow: 51168, mom: 937871 },
+            "2854": { bow: 51013, mom: 937773 },
+            "2855": { bow: 51134, mom: 939684 },
+            "2856": { bow: 51089, mom: 939527 },
+            "2857": { bow: 51046, mom: 937485 },
+            "2858": { bow: 51456, mom: 945726 },
+            "2859": { bow: 51230, mom: 941579 },
+            "2860": { bow: 51048, mom: 939466 }
+        };
+
+        function changeAircraft() {
+            let an = document.getElementById("anvMatricula").value;
+            if(aeronaves[an]) {
+                document.getElementById("basicWeight").value = aeronaves[an].bow;
+                document.getElementById("basicMoment").value = aeronaves[an].mom;
+                calculate();
+            }
+        }
+
+        const loadStationsFixed = [
+            { id: 'pilotos', category: 'Tripulação', label: 'Pilotos', arm: 277 },
+            { id: 'mecanico', category: 'Tripulação', label: 'Mecânico', arm: 321 },
+            { id: 'lm', category: 'Tripulação', label: 'LM Station', arm: 424 },
+            { id: 'missao', category: 'Equipamentos', label: 'Carga de Missão', arm: 900 },
+            { id: 'garfo', category: 'Equipamentos', label: 'Garfo de Reboque', arm: 970 },
+            { id: 'sidepax', category: 'Carga / PAX', label: 'Side Pax', arm: 630 },
+            { id: 'centerpax', category: 'Carga / PAX', label: 'Center Pax', arm: 665 }
+        ];
+
+        let currentStations = [];
+
+        function renderForm() {
+            const config = document.getElementById('configPallets').value;
+            const container = document.getElementById('dynamicInputs');
+            container.innerHTML = '';
+            
+            // Recria a lista de estacoes
+            currentStations = [...loadStationsFixed];
+
+            // Adiciona Pallets baseados na configuracao
+            if (config === '108') {
+                for(let i=1; i<=5; i++) {
+                    currentStations.push({ id: 'pallet'+i, category: 'Pallets (108")', label: 'Pallet '+i, arm: '', editableArm: true });
+                }
+            } else {
+                for(let i=1; i<=4; i++) {
+                    currentStations.push({ id: 'pallet'+i, category: 'Pallets (88")', label: 'Pallet '+i, arm: '', editableArm: true });
+                }
+            }
+            // Rampa sempre tem 2 vagas
+            currentStations.push({ id: 'rampa1', category: 'Rampa', label: 'Rampa 1', arm: 990, editableArm: true });
+            currentStations.push({ id: 'rampa2', category: 'Rampa', label: 'Rampa 2', arm: 1080, editableArm: true });
+
+            // Agrupa por categoria
+            const grouped = currentStations.reduce((acc, curr) => {
+                (acc[curr.category] = acc[curr.category] || []).push(curr);
+                return acc;
+            }, {});
+
+            for (const [category, items] of Object.entries(grouped)) {
+                let html = `<div class="bg-white p-4 rounded-xl shadow mb-4">
+                                <h3 class="font-bold text-fab border-b pb-2 mb-3">${category}</h3>`;
+                
+                items.forEach(item => {
+                    if(item.editableArm) {
+                        html += `
+                        <div class="flex justify-between items-center mb-3 space-x-2">
+                            <div class="w-1/3">
+                                <label class="block text-xs font-semibold text-gray-600">${item.label}</label>
+                            </div>
+                            <div class="w-1/3 relative">
+                                <label class="block text-[10px] text-gray-400">Braço (pol)</label>
+                                <input type="number" id="arm_${item.id}" value="${item.arm}" oninput="calculate()" placeholder="Braço" class="w-full p-2 bg-gray-50 border rounded font-semibold text-gray-700 outline-none focus:ring-1 focus:ring-blue-500">
+                            </div>
+                            <div class="w-1/3 relative">
+                                <label class="block text-[10px] text-gray-400">Peso (kg)</label>
+                                <input type="number" id="peso_${item.id}" oninput="calculate()" placeholder="0" class="w-full p-2 bg-gray-50 border rounded text-right pr-6 font-semibold text-gray-700 outline-none focus:ring-1 focus:ring-blue-500">
+                                <span class="absolute right-2 top-6 text-[10px] text-gray-400">kg</span>
+                            </div>
+                        </div>`;
+                    } else {
+                        html += `
+                        <div class="flex justify-between items-center mb-3">
+                            <div class="w-1/2 pr-2">
+                                <label class="block text-xs font-semibold text-gray-600">${item.label}</label>
+                                <span class="text-[10px] text-gray-400">Braço: ${item.arm}"</span>
+                            </div>
+                            <div class="w-1/2 relative">
+                                <input type="number" id="peso_${item.id}" oninput="calculate()" placeholder="0" class="w-full p-2 bg-gray-50 border rounded text-right pr-8 font-semibold text-gray-700 outline-none focus:ring-1 focus:ring-blue-500">
+                                <span class="absolute right-3 top-2.5 text-xs text-gray-400">kg</span>
+                            </div>
+                        </div>`;
+                    }
+                });
+                html += `</div>`;
+                container.innerHTML += html;
+            }
+            calculate();
+        }
+
+        window.calculate = function() {
+            let basicWeight = parseFloat(document.getElementById('basicWeight').value) || 0;
+            let basicMoment = parseFloat(document.getElementById('basicMoment').value) || 0;
+
+            let totalWeight = basicWeight;
+            let totalMoment = basicMoment;
+
+            currentStations.forEach(item => {
+                let inputWeight = document.getElementById('peso_' + item.id);
+                
+                let weight = (inputWeight && inputWeight.value) ? parseFloat(inputWeight.value) : 0;
+                
+                let arm = item.arm;
+                if(item.editableArm) {
+                    let inputArm = document.getElementById('arm_' + item.id);
+                    arm = (inputArm && inputArm.value) ? parseFloat(inputArm.value) : 0;
+                }
+
+                if (weight > 0 && arm > 0) {
+                    let armMeters = arm * IN_TO_M; 
+                    let moment = weight * armMeters;
+                    totalWeight += weight;
+                    totalMoment += moment;
+                }
+            });
+
+            let cgMeters = totalWeight > 0 ? (totalMoment / totalWeight) : 0;
+            let macPercent = totalWeight > 0 ? ((cgMeters - LEMAC) / MAC) * 100 : 0;
+
+            document.getElementById('resWeight').innerText = totalWeight.toLocaleString('pt-BR');
+            document.getElementById('resMoment').innerText = totalMoment.toLocaleString('pt-BR', { maximumFractionDigits: 2 });
+            document.getElementById('resCG').innerText = cgMeters.toFixed(3);
+            document.getElementById('resMAC').innerText = macPercent.toFixed(2) + '%';
+
+            const alertBox = document.getElementById('mzfwAlert');
+            if (totalWeight > MZFW_MAX) {
+                alertBox.className = "p-4 rounded-lg font-bold text-center text-white bg-red-600 shadow animate-pulse";
+                alertBox.innerText = `⚠️ MZFW EXCEDIDO! (${(totalWeight - MZFW_MAX).toLocaleString('pt-BR')} kg acima limite)`;
+            } else {
+                alertBox.className = "p-4 rounded-lg font-bold text-center text-white bg-green-500 shadow";
+                alertBox.innerText = "✅ MZFW DENTRO DO LIMITE (Máx 73.500 kg)";
+            }
+        };
+
+        // Firebase Mock Initialization and other standard JS blocks...
+        window.handleLogin = () => {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('flex');
+            renderForm();
+        };
+
+        window.handleLogout = () => {
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('flex');
+            document.getElementById('loginScreen').classList.remove('hidden');
+        };
+
+        window.handleResetPassword = () => {
+            const email = document.getElementById('email').value;
+            if(!email) return alert('Digite seu e-mail no campo acima para recuperar a senha.');
+            alert('E-mail de redefinição enviado para: ' + email);
+        };
+
+        function switchTab(tabId) {
+            ['tab-aeronave', 'tab-operacional', 'tab-resultado'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+                document.getElementById('btn-' + id).classList.replace('tab-active', 'tab-inactive');
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+            document.getElementById('btn-' + tabId).classList.replace('tab-inactive', 'tab-active');
+        }
+    </script>
+</body>
+</html>
