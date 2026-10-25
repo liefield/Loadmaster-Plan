@@ -31,6 +31,7 @@
     <div id="loginScreen" class="flex-1 flex flex-col justify-center items-center px-6">
         <div class="w-full max-w-sm bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
             <div class="text-center mb-8">
+                <!-- Logo Oficial do KC-390 restaurada -->
                 <img src="https://raw.githubusercontent.com/brunoizidro/Loadmaster-Plan/main/IMG_1047.jpeg" 
                      alt="Logo KC-390" 
                      onerror="this.src='https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=500&auto=format&fit=crop&q=60'"
@@ -156,35 +157,50 @@
                 </div>
             </section>
             
-            <!-- ABA 4: Guincho -->
+            <!-- ABA 4: Guincho (Com Imagens / Esquemas Restaurados) -->
             <section id="tab-guincho" class="hidden space-y-4">
                 <div class="bg-white p-5 rounded-xl shadow-lg border-t-4 border-blue-800">
                     <h2 class="text-xl font-black text-center mb-4 text-gray-800">Operações de Guincho</h2>
-                    <p class="text-sm text-gray-500 text-center mb-4">Módulo de cálculo e operação de guincho para carga tática.</p>
-                    <div class="p-4 bg-gray-100 rounded-lg text-center font-semibold text-gray-600">
-                        Módulo operacional ativo.
+                    <p class="text-sm text-gray-500 text-center mb-4">Esquemas técnicos e operação do sistema de guincho do KC-390.</p>
+                    <div class="space-y-4">
+                        <div class="border rounded-lg p-2 bg-gray-50 text-center">
+                            <img src="https://raw.githubusercontent.com/brunoizidro/Loadmaster-Plan/main/guincho_esquema.png" 
+                                 onerror="this.src='https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=500&auto=format&fit=crop&q=60'" 
+                                 alt="Esquema Guincho KC-390" class="w-full h-auto rounded shadow-md mx-auto object-cover max-h-64">
+                            <span class="text-xs text-gray-500 mt-2 block">Diagrama operacional do sistema de cabo e tração.</span>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- ABA 5: Piso -->
+            <!-- ABA 5: Piso (Com Imagens / Esquemas Restaurados) -->
             <section id="tab-piso" class="hidden space-y-4">
                 <div class="bg-white p-5 rounded-xl shadow-lg border-t-4 border-blue-800">
                     <h2 class="text-xl font-black text-center mb-4 text-gray-800">Limites de Piso</h2>
-                    <p class="text-sm text-gray-500 text-center mb-4">Verificação de resistência estrutural e distribuição de carga.</p>
-                    <div class="p-4 bg-gray-100 rounded-lg text-center font-semibold text-gray-600">
-                        Módulo estrutural ativo.
+                    <p class="text-sm text-gray-500 text-center mb-4">Resistência estrutural e limites de escoramento do piso de carga.</p>
+                    <div class="space-y-4">
+                        <div class="border rounded-lg p-2 bg-gray-50 text-center">
+                            <img src="https://raw.githubusercontent.com/brunoizidro/Loadmaster-Plan/main/piso_limites.png" 
+                                 onerror="this.src='https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=500&auto=format&fit=crop&q=60'" 
+                                 alt="Limites de Piso KC-390" class="w-full h-auto rounded shadow-md mx-auto object-cover max-h-64">
+                            <span class="text-xs text-gray-500 mt-2 block">Tabela de escoramento e distribuição de PSI por área.</span>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- ABA 6: Dimensões -->
+            <!-- ABA 6: Dimensões (Com Imagens / Esquemas Restaurados) -->
             <section id="tab-dimensoes" class="hidden space-y-4">
                 <div class="bg-white p-5 rounded-xl shadow-lg border-t-4 border-blue-800">
                     <h2 class="text-xl font-black text-center mb-4 text-gray-800">Dimensões da Carga</h2>
-                    <p class="text-sm text-gray-500 text-center mb-4">Checagem de envelope dimensional do compartimento de carga.</p>
-                    <div class="p-4 bg-gray-100 rounded-lg text-center font-semibold text-gray-600">
-                        Módulo dimensional ativo.
+                    <p class="text-sm text-gray-500 text-center mb-4">Gabarito e envelope dimensional do compartimento de carga.</p>
+                    <div class="space-y-4">
+                        <div class="border rounded-lg p-2 bg-gray-50 text-center">
+                            <img src="https://raw.githubusercontent.com/brunoizidro/Loadmaster-Plan/main/dimensoes_salao.png" 
+                                 onerror="this.src='https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=500&auto=format&fit=crop&q=60'" 
+                                 alt="Dimensões Salão KC-390" class="w-full h-auto rounded shadow-md mx-auto object-cover max-h-64">
+                            <span class="text-xs text-gray-500 mt-2 block">Seção transversal e limites de altura/largura.</span>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -192,7 +208,7 @@
         </main>
     </div>
 
-    <!-- Scripts da Aplicação com Robustez, Sanitização e Autosave -->
+    <!-- Scripts da Aplicação com Robustez, Sanitização, Autosave e Imagens -->
     <script>
         const IN_TO_M = 0.0254;
         const LEMAC = 16.474;
