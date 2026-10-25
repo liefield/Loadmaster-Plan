@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -40,10 +40,10 @@
                 <p class="text-gray-500 text-sm">Acesso Restrito - Loadmasters</p>
             </div>
             
-            <form id="loginForm" class="space-y-5" onsubmit="event.preventDefault(); handleLogin();">
+            <form id="loginForm" class="space-y-5" onsubmit="event.preventDefault(); checkLogin();">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">SARAM / E-mail</label>
-                    <input type="text" id="email" required class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800 outline-none" placeholder="Ex: 1234567">
+                    <input type="text" id="email" required class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800 outline-none" placeholder="Ex: 6329888">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Senha</label>
@@ -90,6 +90,12 @@
                                 <option value="2858">FAB 2858</option>
                                 <option value="2859">FAB 2859</option>
                                 <option value="2860">FAB 2860</option>
+                                <option value="2861">FAB 2861</option>
+                                <option value="2862">FAB 2862</option>
+                                <option value="2863">FAB 2863</option>
+                                <option value="2864">FAB 2864</option>
+                                <option value="2865">FAB 2865</option>
+                                <option value="2866">FAB 2866</option>
                             </select>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
@@ -157,7 +163,7 @@
                 </div>
             </section>
             
-            <!-- ABA 4: Guincho (Diagrama Técnico em SVG Nativo) -->
+            <!-- ABA 4: Guincho -->
             <section id="tab-guincho" class="hidden space-y-4">
                 <div class="bg-white p-5 rounded-xl shadow-lg border-t-4 border-blue-800">
                     <h2 class="text-xl font-black text-center mb-2 text-gray-800">Operações de Guincho</h2>
@@ -180,7 +186,7 @@
                 </div>
             </section>
 
-            <!-- ABA 5: Piso (Gráfico Técnico em SVG Nativo) -->
+            <!-- ABA 5: Piso -->
             <section id="tab-piso" class="hidden space-y-4">
                 <div class="bg-white p-5 rounded-xl shadow-lg border-t-4 border-blue-800">
                     <h2 class="text-xl font-black text-center mb-2 text-gray-800">Limites de Piso</h2>
@@ -201,7 +207,7 @@
                 </div>
             </section>
 
-            <!-- ABA 6: Dimensões (Esquema Técnico em SVG Nativo) -->
+            <!-- ABA 6: Dimensões -->
             <section id="tab-dimensoes" class="hidden space-y-4">
                 <div class="bg-white p-5 rounded-xl shadow-lg border-t-4 border-blue-800">
                     <h2 class="text-xl font-black text-center mb-2 text-gray-800">Dimensões da Carga</h2>
@@ -239,7 +245,13 @@
             "2857": { bow: 51046, mom: 937485 },
             "2858": { bow: 51456, mom: 945726 },
             "2859": { bow: 51230, mom: 941579 },
-            "2860": { bow: 51048, mom: 939466 }
+            "2860": { bow: 51048, mom: 939466 },
+            "2861": { bow: 51650, mom: 941450 },
+            "2862": { bow: 51700, mom: 941500 },
+            "2863": { bow: 51750, mom: 941550 },
+            "2864": { bow: 51800, mom: 941600 },
+            "2865": { bow: 51850, mom: 941650 },
+            "2866": { bow: 51900, mom: 941700 }
         };
 
         const salonOptions = [
@@ -446,16 +458,23 @@
             }
         };
 
-        window.handleLogin = () => {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('mainApp').classList.remove('hidden');
-            document.getElementById('mainApp').classList.add('flex');
-            renderForm();
-            try {
-                const raw = localStorage.getItem('kc390_loadmaster_full_state');
-                if (raw) loadSavedValues();
-            } catch(e) {}
-            calculate();
+        window.checkLogin = function() {
+            const enteredEmail = document.getElementById('email').value.trim();
+            const enteredPass = document.getElementById('password').value.trim();
+
+            if (enteredEmail === '6329888' && enteredPass === 'Meleca#25') {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                document.getElementById('mainApp').classList.add('flex');
+                renderForm();
+                try {
+                    const raw = localStorage.getItem('kc390_loadmaster_full_state');
+                    if (raw) loadSavedValues();
+                } catch(e) {}
+                calculate();
+            } else {
+                alert('SARAM ou senha incorretos. Utilize as credenciais autorizadas.');
+            }
         };
 
         window.handleLogout = () => {
