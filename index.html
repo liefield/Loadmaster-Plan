@@ -20,7 +20,11 @@
         .text-fab { color: var(--fab-blue); }
         .tab-active { border-bottom: 4px solid var(--fab-blue); font-weight: bold; color: var(--fab-blue); }
         .tab-inactive { color: #6b7280; }
+        
+        /* Oculta scrollbar para ficar com cara de App */
         ::-webkit-scrollbar { width: 0px; background: transparent; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="h-screen flex flex-col">
@@ -28,15 +32,18 @@
     <div id="loginScreen" class="flex-1 flex flex-col justify-center items-center px-6">
         <div class="w-full max-w-sm bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
             <div class="text-center mb-8">
-                <img src="./ios-icon.png" alt="Logo P&B" class="w-24 h-24 mx-auto mb-4 rounded-2xl shadow-md">
+                <img src="https://raw.githubusercontent.com/brunoizidro/Loadmaster-Plan/main/IMG_1047.jpeg" 
+                     alt="Logo KC-390" 
+                     onerror="this.src='https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=500&auto=format&fit=crop&q=60'"
+                     class="w-32 h-32 mx-auto mb-4 rounded-full shadow-lg object-cover border-4 border-blue-900">
                 <h1 class="text-3xl font-extrabold text-fab mb-2">✈️ KC-390 P&B</h1>
                 <p class="text-gray-500 text-sm">Acesso Restrito - Loadmasters</p>
             </div>
             
             <form id="loginForm" class="space-y-5" onsubmit="event.preventDefault(); handleLogin();">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">E-mail</label>
-                    <input type="email" id="email" required class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800 outline-none" placeholder="militar@fab.mil.br">
+                    <label class="block text-sm font-medium text-gray-700">SARAM / E-mail</label>
+                    <input type="text" id="email" required class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800 outline-none" placeholder="Ex: 6329888">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Senha</label>
@@ -53,10 +60,13 @@
             <button onclick="handleLogout()" class="text-sm bg-red-600 px-3 py-1 rounded hover:bg-red-700">Sair</button>
         </header>
 
-        <nav class="bg-white flex justify-around shadow z-10 sticky top-0 text-sm">
-            <button onclick="switchTab('tab-aeronave')" id="btn-tab-aeronave" class="flex-1 py-3 tab-active text-center">Aeronave</button>
-            <button onclick="switchTab('tab-operacional')" id="btn-tab-operacional" class="flex-1 py-3 tab-inactive text-center">Missão</button>
-            <button onclick="switchTab('tab-resultado')" id="btn-tab-resultado" class="flex-1 py-3 tab-inactive text-center">Resultados</button>
+        <nav class="bg-white flex shadow z-10 sticky top-0 text-sm overflow-x-auto whitespace-nowrap hide-scrollbar">
+            <button onclick="switchTab('tab-aeronave')" id="btn-tab-aeronave" class="px-4 py-3 tab-active text-center transition-all">Aeronave</button>
+            <button onclick="switchTab('tab-operacional')" id="btn-tab-operacional" class="px-4 py-3 tab-inactive text-center transition-all">Missão</button>
+            <button onclick="switchTab('tab-resultado')" id="btn-tab-resultado" class="px-4 py-3 tab-inactive text-center transition-all">Resultados</button>
+            <button onclick="switchTab('tab-guincho')" id="btn-tab-guincho" class="px-4 py-3 tab-inactive text-center transition-all">Guincho</button>
+            <button onclick="switchTab('tab-piso')" id="btn-tab-piso" class="px-4 py-3 tab-inactive text-center transition-all">Piso</button>
+            <button onclick="switchTab('tab-dimensoes')" id="btn-tab-dimensoes" class="px-4 py-3 tab-inactive text-center transition-all">Dimensões</button>
         </nav>
 
         <main class="flex-1 overflow-y-auto p-4 pb-20">
@@ -96,10 +106,9 @@
             <section id="tab-operacional" class="hidden space-y-6">
                 
                 <div class="bg-white p-4 rounded-xl shadow mb-2">
-                    <h3 class="font-bold text-fab border-b pb-2 mb-3">Configuração de Pallets</h3>
-                    <select id="configPallets" onchange="renderForm()" class="w-full p-2 border rounded bg-gray-50 font-semibold text-gray-700 outline-none">
-                        <option value="108">Pallets 108" (5 posições + 2 Rampa)</option>
-                        <option value="88">Pallets 88" (4 posições + 2 Rampa)</option>
+                    <h3 class="font-bold text-fab border-b pb-2 mb-3">Configuração do Salão</h3>
+                    <select id="configSalon" onchange="renderForm()" class="w-full p-2 border rounded bg-gray-50 font-semibold text-gray-700 outline-none text-sm">
+                        <!-- Options populated via JS -->
                     </select>
                 </div>
 
@@ -119,7 +128,7 @@
                         </div>
                         <div>
                             <label class="block text-xs text-gray-500 uppercase font-bold">Passageiros (Qtd)</label>
-                            <input type="number" id="qtdPassageiros" placeholder="Ex: 20" class="w-full p-2 border-b-2 border-gray-300 text-center text-lg font-bold outline-none focus:border-blue-800">
+                            <input type="number" id="qtdPassageiros" placeholder="Ex: 80" class="w-full p-2 border-b-2 border-gray-300 text-center text-lg font-bold outline-none focus:border-blue-800">
                         </div>
                     </div>
 
@@ -147,10 +156,44 @@
                     </div>
                 </div>
             </section>
+            
+            <!-- ABA 4: Guincho -->
+            <section id="tab-guincho" class="hidden space-y-4">
+                <div class="bg-white p-5 rounded-xl shadow-lg border-t-4 border-blue-800">
+                    <h2 class="text-xl font-black text-center mb-4 text-gray-800">Operações de Guincho</h2>
+                    <p class="text-sm text-gray-500 text-center mb-4">Módulo em desenvolvimento para cálculos específicos de guincho.</p>
+                    <div class="p-4 bg-gray-100 rounded-lg text-center font-semibold text-gray-600">
+                        Em breve...
+                    </div>
+                </div>
+            </section>
+
+            <!-- ABA 5: Piso -->
+            <section id="tab-piso" class="hidden space-y-4">
+                <div class="bg-white p-5 rounded-xl shadow-lg border-t-4 border-blue-800">
+                    <h2 class="text-xl font-black text-center mb-4 text-gray-800">Limites de Piso</h2>
+                    <p class="text-sm text-gray-500 text-center mb-4">Verificação de resistência estrutural e distribuição de carga sobre o piso.</p>
+                    <div class="p-4 bg-gray-100 rounded-lg text-center font-semibold text-gray-600">
+                        Em breve...
+                    </div>
+                </div>
+            </section>
+
+            <!-- ABA 6: Dimensões -->
+            <section id="tab-dimensoes" class="hidden space-y-4">
+                <div class="bg-white p-5 rounded-xl shadow-lg border-t-4 border-blue-800">
+                    <h2 class="text-xl font-black text-center mb-4 text-gray-800">Dimensões da Carga</h2>
+                    <p class="text-sm text-gray-500 text-center mb-4">Checagem de envelope dimensional e gabarito do compartimento.</p>
+                    <div class="p-4 bg-gray-100 rounded-lg text-center font-semibold text-gray-600">
+                        Em breve...
+                    </div>
+                </div>
+            </section>
+
         </main>
     </div>
 
-    <!-- Firebase SDK / Scripts omitidos por brevidade e depois preenchidos -->
+    <!-- Scripts da Aplicação -->
     <script>
         const IN_TO_M = 0.0254;
         const LEMAC = 16.474;
@@ -168,6 +211,30 @@
             "2860": { bow: 51048, mom: 939466 }
         };
 
+        const salonOptions = [
+            { value: 'full_pax', label: 'Full Pax (80 Passageiros) + 2 Rampa', pallets: 0, prefix: '' },
+            { value: '108_5', label: 'Pallets 108" - 5 Posições (0 Pax) + 2 Rampa', pallets: 5, prefix: 'Pallet 108" -' },
+            { value: '108_4', label: 'Pallets 108" - 4 Posições (12 Pax) + 2 Rampa', pallets: 4, prefix: 'Pallet 108" -' },
+            { value: '108_3', label: 'Pallets 108" - 3 Posições (28 Pax) + 2 Rampa', pallets: 3, prefix: 'Pallet 108" -' },
+            { value: '108_2', label: 'Pallets 108" - 2 Posições (44 Pax) + 2 Rampa', pallets: 2, prefix: 'Pallet 108" -' },
+            { value: '108_1', label: 'Pallets 108" - 1 Posição (60 Pax) + 2 Rampa', pallets: 1, prefix: 'Pallet 108" -' },
+            { value: '108_1_882', label: 'Pallets 108" - 1 Posição STA 882 (72 Pax) + 2 Rampa', pallets: 1, prefix: 'Pallet STA 882 -' },
+            { value: '88_4', label: 'Pallets 88" - 4 Posições (36 Pax) + 2 Rampa', pallets: 4, prefix: 'Pallet 88" -' },
+            { value: '88_3', label: 'Pallets 88" - 3 Posições (40 Pax) + 2 Rampa', pallets: 3, prefix: 'Pallet 88" -' },
+            { value: '88_2_108', label: 'Pallets 88" - 2 Pos. + 1 de 108 (48 Pax) + 2 Rampa', pallets: 3, prefix: 'Pallet Misto -' },
+            { value: '88_2', label: 'Pallets 88" - 2 Posições (56 Pax) + 2 Rampa', pallets: 2, prefix: 'Pallet 88" -' },
+            { value: '88_1', label: 'Pallets 88" - 1 Posição (64 Pax) + 2 Rampa', pallets: 1, prefix: 'Pallet 88" -' }
+        ];
+
+        // Populando as opções do salão
+        const configSelect = document.getElementById('configSalon');
+        salonOptions.forEach(opt => {
+            let option = document.createElement('option');
+            option.value = opt.value;
+            option.textContent = opt.label;
+            configSelect.appendChild(option);
+        });
+
         function changeAircraft() {
             let an = document.getElementById("anvMatricula").value;
             if(aeronaves[an]) {
@@ -183,33 +250,35 @@
             { id: 'lm', category: 'Tripulação', label: 'LM Station', arm: 424 },
             { id: 'missao', category: 'Equipamentos', label: 'Carga de Missão', arm: 900 },
             { id: 'garfo', category: 'Equipamentos', label: 'Garfo de Reboque', arm: 970 },
-            { id: 'sidepax', category: 'Carga / PAX', label: 'Side Pax', arm: 630 },
-            { id: 'centerpax', category: 'Carga / PAX', label: 'Center Pax', arm: 665 }
+            { id: 'sidepax', category: 'Passageiros (PAX)', label: 'Side Pax', arm: 630 },
+            { id: 'centerpax', category: 'Passageiros (PAX)', label: 'Center Pax', arm: 665 }
         ];
 
         let currentStations = [];
 
         function renderForm() {
-            const config = document.getElementById('configPallets').value;
+            const configVal = configSelect.value;
+            const config = salonOptions.find(o => o.value === configVal);
+            
             const container = document.getElementById('dynamicInputs');
             container.innerHTML = '';
             
-            // Recria a lista de estacoes
             currentStations = [...loadStationsFixed];
 
             // Adiciona Pallets baseados na configuracao
-            if (config === '108') {
-                for(let i=1; i<=5; i++) {
-                    currentStations.push({ id: 'pallet'+i, category: 'Pallets (108")', label: 'Pallet '+i, arm: '', editableArm: true });
-                }
-            } else {
-                for(let i=1; i<=4; i++) {
-                    currentStations.push({ id: 'pallet'+i, category: 'Pallets (88")', label: 'Pallet '+i, arm: '', editableArm: true });
+            if (config.pallets > 0) {
+                for(let i=1; i<=config.pallets; i++) {
+                    currentStations.push({ 
+                        id: 'pallet'+i, 
+                        category: 'Configuração do Salão', 
+                        label: `${config.prefix} ${i}`, 
+                        arm: '' // Deixamos o braço vazio pro usuário preencher
+                    });
                 }
             }
             // Rampa sempre tem 2 vagas
-            currentStations.push({ id: 'rampa1', category: 'Rampa', label: 'Rampa 1', arm: 990, editableArm: true });
-            currentStations.push({ id: 'rampa2', category: 'Rampa', label: 'Rampa 2', arm: 1080, editableArm: true });
+            currentStations.push({ id: 'rampa1', category: 'Rampa', label: 'Rampa 1', arm: 990 });
+            currentStations.push({ id: 'rampa2', category: 'Rampa', label: 'Rampa 2', arm: 1080 });
 
             // Agrupa por categoria
             const grouped = currentStations.reduce((acc, curr) => {
@@ -222,35 +291,22 @@
                                 <h3 class="font-bold text-fab border-b pb-2 mb-3">${category}</h3>`;
                 
                 items.forEach(item => {
-                    if(item.editableArm) {
-                        html += `
-                        <div class="flex justify-between items-center mb-3 space-x-2">
-                            <div class="w-1/3">
-                                <label class="block text-xs font-semibold text-gray-600">${item.label}</label>
-                            </div>
-                            <div class="w-1/3 relative">
-                                <label class="block text-[10px] text-gray-400">Braço (pol)</label>
-                                <input type="number" id="arm_${item.id}" value="${item.arm}" oninput="calculate()" placeholder="Braço" class="w-full p-2 bg-gray-50 border rounded font-semibold text-gray-700 outline-none focus:ring-1 focus:ring-blue-500">
-                            </div>
-                            <div class="w-1/3 relative">
-                                <label class="block text-[10px] text-gray-400">Peso (kg)</label>
-                                <input type="number" id="peso_${item.id}" oninput="calculate()" placeholder="0" class="w-full p-2 bg-gray-50 border rounded text-right pr-6 font-semibold text-gray-700 outline-none focus:ring-1 focus:ring-blue-500">
-                                <span class="absolute right-2 top-6 text-[10px] text-gray-400">kg</span>
-                            </div>
-                        </div>`;
-                    } else {
-                        html += `
-                        <div class="flex justify-between items-center mb-3">
-                            <div class="w-1/2 pr-2">
-                                <label class="block text-xs font-semibold text-gray-600">${item.label}</label>
-                                <span class="text-[10px] text-gray-400">Braço: ${item.arm}"</span>
-                            </div>
-                            <div class="w-1/2 relative">
-                                <input type="number" id="peso_${item.id}" oninput="calculate()" placeholder="0" class="w-full p-2 bg-gray-50 border rounded text-right pr-8 font-semibold text-gray-700 outline-none focus:ring-1 focus:ring-blue-500">
-                                <span class="absolute right-3 top-2.5 text-xs text-gray-400">kg</span>
-                            </div>
-                        </div>`;
-                    }
+                    // Agora TODOS os itens têm edição de Braço (arm)
+                    html += `
+                    <div class="flex justify-between items-center mb-3 space-x-2">
+                        <div class="w-1/3">
+                            <label class="block text-xs font-semibold text-gray-600 leading-tight">${item.label}</label>
+                        </div>
+                        <div class="w-1/3 relative">
+                            <label class="block text-[10px] text-gray-400">Braço (pol)</label>
+                            <input type="number" id="arm_${item.id}" value="${item.arm}" oninput="calculate()" placeholder="Braço" class="w-full p-2 bg-gray-50 border rounded font-semibold text-gray-700 outline-none focus:ring-1 focus:ring-blue-500 text-center">
+                        </div>
+                        <div class="w-1/3 relative">
+                            <label class="block text-[10px] text-gray-400">Peso (kg)</label>
+                            <input type="number" id="peso_${item.id}" oninput="calculate()" placeholder="0" class="w-full p-2 bg-gray-50 border rounded text-right pr-6 font-semibold text-gray-700 outline-none focus:ring-1 focus:ring-blue-500">
+                            <span class="absolute right-2 top-6 text-[10px] text-gray-400">kg</span>
+                        </div>
+                    </div>`;
                 });
                 html += `</div>`;
                 container.innerHTML += html;
@@ -267,14 +323,10 @@
 
             currentStations.forEach(item => {
                 let inputWeight = document.getElementById('peso_' + item.id);
-                
                 let weight = (inputWeight && inputWeight.value) ? parseFloat(inputWeight.value) : 0;
                 
-                let arm = item.arm;
-                if(item.editableArm) {
-                    let inputArm = document.getElementById('arm_' + item.id);
-                    arm = (inputArm && inputArm.value) ? parseFloat(inputArm.value) : 0;
-                }
+                let inputArm = document.getElementById('arm_' + item.id);
+                let arm = (inputArm && inputArm.value) ? parseFloat(inputArm.value) : 0;
 
                 if (weight > 0 && arm > 0) {
                     let armMeters = arm * IN_TO_M; 
@@ -302,7 +354,6 @@
             }
         };
 
-        // Firebase Mock Initialization and other standard JS blocks...
         window.handleLogin = () => {
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('mainApp').classList.remove('hidden');
@@ -316,14 +367,9 @@
             document.getElementById('loginScreen').classList.remove('hidden');
         };
 
-        window.handleResetPassword = () => {
-            const email = document.getElementById('email').value;
-            if(!email) return alert('Digite seu e-mail no campo acima para recuperar a senha.');
-            alert('E-mail de redefinição enviado para: ' + email);
-        };
-
         function switchTab(tabId) {
-            ['tab-aeronave', 'tab-operacional', 'tab-resultado'].forEach(id => {
+            const tabs = ['tab-aeronave', 'tab-operacional', 'tab-resultado', 'tab-guincho', 'tab-piso', 'tab-dimensoes'];
+            tabs.forEach(id => {
                 document.getElementById(id).classList.add('hidden');
                 document.getElementById('btn-' + id).classList.replace('tab-active', 'tab-inactive');
             });
