@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -32,9 +32,10 @@
     <div id="loginScreen" class="flex-1 flex flex-col justify-center items-center px-6">
         <div class="w-full max-w-sm bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
             <div class="text-center mb-8">
+                <!-- Logo Oficial do KC-390 (IMG_1047.jpeg) -->
                 <img src="https://raw.githubusercontent.com/brunoizidro/Loadmaster-Plan/main/IMG_1047.jpeg" 
                      alt="Logo KC-390" 
-                     onerror="this.src='https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=500&auto=format&fit=crop&q=60'"
+                     onerror="this.src='https://raw.githubusercontent.com/brunoizidro/Loadmaster-Plan/main/IMG_1047.jpeg'"
                      class="w-32 h-32 mx-auto mb-4 rounded-full shadow-lg object-cover border-4 border-blue-900">
                 <h1 class="text-3xl font-extrabold text-fab mb-2">✈️ KC-390 P&B</h1>
                 <p class="text-gray-500 text-sm">Acesso Restrito - Loadmasters</p>
@@ -43,11 +44,11 @@
             <form id="loginForm" class="space-y-5" onsubmit="event.preventDefault(); checkLogin();">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">SARAM / E-mail</label>
-                    <input type="text" id="email" required class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800 outline-none" placeholder="Ex: 6329888">
+                    <input type="text" id="email" required value="6329888" class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800 outline-none font-semibold text-gray-800" placeholder="6329888">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Senha</label>
-                    <input type="password" id="password" required class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800 outline-none" placeholder="••••••••">
+                    <input type="password" id="password" required value="Meleca#25" class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800 outline-none font-semibold text-gray-800" placeholder="••••••••">
                 </div>
                 <button type="submit" class="w-full bg-fab text-white p-3 rounded-lg font-bold hover:bg-blue-900 transition">ENTRAR</button>
             </form>
