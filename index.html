@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loadmaster Pro - P&B KC-390 (V9)</title>
+    <title>Loadmaster Pro - P&B KC-390</title>
     <style>
         :root {
             --primary: #1b2a4a;
@@ -178,7 +178,6 @@
             color: var(--danger);
         }
 
-        /* Canvas / Envelope */
         .envelope-container {
             margin-top: 15px;
             text-align: center;
@@ -201,7 +200,6 @@
             margin-top: 10px;
         }
 
-        /* Login Screen */
         #login-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -224,41 +222,42 @@
         .login-box h2 {
             margin-bottom: 15px;
             color: var(--primary);
+            border: none;
         }
     </style>
 </head>
 <body>
 
-    <!-- Tela de Login -->
+    <!-- Tela de Login v8 Preservada -->
     <div id="login-screen">
         <div class="login-box">
-            <h2>Loadmaster Pro V9</h2>
+            <h2>Loadmaster Pro</h2>
             <p style="font-size: 0.8rem; margin-bottom: 15px; color: #666;">Controle de P&B - KC-390 (FAB)</p>
-            <div class="form-group">
+            <div class="form-group" style="text-align: left;">
                 <label>SARAM / E-mail</label>
                 <input type="text" id="saram" placeholder="Digite seu SARAM">
             </div>
-            <div class="form-group">
+            <div class="form-group" style="text-align: left;">
                 <label>Senha Operacional</label>
                 <input type="password" id="password" placeholder="••••••••">
             </div>
-            <button class="btn" onclick="fazerLogin()">Entrar (Modo Offline)</button>
+            <button class="btn" onclick="fazerLogin()">Entrar</button>
         </div>
     </div>
 
     <div class="container" id="main-app" style="display:none;">
         <header>
-            <h1>Loadmaster Pro V9</h1>
-            <p>Peso & Balanço Automatizado - KC-390 Millennium</p>
+            <h1>Loadmaster Pro</h1>
+            <p>Peso & Balanço - KC-390 Millennium</p>
         </header>
 
-        <!-- Abas -->
+        <!-- Abas originais v8 -->
         <div class="tabs">
-            <button class="tab-btn active" onclick="mudarAba('aeronave')">Aeronave</button>
-            <button class="tab-btn active" onclick="mudarAba('missao')">Missão</button>
-            <button class="tab-btn active" onclick="mudarAba('resultados')">Resultados</button>
-            <button class="tab-btn active" onclick="mudarAba('guiche')">Guincho</button>
-            <button class="tab-btn active" onclick="mudarAba('piso')">Piso & Carga</button>
+            <button class="tab-btn active" onclick="mudarAba('aeronave', event)">Aeronave</button>
+            <button class="tab-btn" onclick="mudarAba('missao', event)">Missão</button>
+            <button class="tab-btn" onclick="mudarAba('resultados', event)">Resultados</button>
+            <button class="tab-btn" onclick="mudarAba('guiche', event)">Guincho</button>
+            <button class="tab-btn" onclick="mudarAba('piso', event)">Piso & Carga</button>
         </div>
 
         <!-- SEÇÃO 1: AERONAVE -->
@@ -282,7 +281,7 @@
                 <p>Momento Vazio: <span id="txt-mom">921.600 kg.m</span></p>
                 <p>CG Vazio (% MAC): <span id="txt-cg-vazio">24.5%</span></p>
             </div>
-            <button class="btn" onclick="mudarAba('missao')">Avançar para Missão</button>
+            <button class="btn" onclick="mudarAbaTab('missao')">Avançar para Missão</button>
         </div>
 
         <!-- SEÇÃO 2: MISSÃO -->
@@ -385,16 +384,29 @@
             atualizarAeronave();
         }
 
-        function mudarAba(id) {
+        function mudarAba(id, evt) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             
             document.getElementById('sec-' + id).classList.add('active');
-            event.target.classList.add('active');
+            if(evt && evt.target) {
+                evt.target.classList.add('active');
+            }
 
             if(id === 'resultados') {
                 desenharEnvelope();
             }
+        }
+
+        function mudarAbaTab(id) {
+            const buttons = document.querySelectorAll('.tab-btn');
+            let targetBtn = null;
+            buttons.forEach(b => {
+                if(b.textContent.toLowerCase().includes(id === 'missao' ? 'missão' : id)) {
+                    targetBtn = b;
+                }
+            });
+            mudarAba(id, { target: targetBtn });
         }
 
         const dadosAeronaves = {
@@ -426,7 +438,6 @@
         }
 
         let cgAtualGlobal = 25.0;
-        let pesoTowGlobal = 70000;
 
         function calcularPB() {
             const mat = document.getElementById('matricula').value;
@@ -443,7 +454,6 @@
             const tow = mzfw + comb;
             const law = mzfw + combPouso;
 
-            // Simulação de momento aproximado para cálculo de CG
             const momCarga = (trip * 5) + (pax * 15) + (carga * 18);
             const momTotalTow = momVazio + momCarga + (comb * 17);
             const momTotalPouso = momVazio + momCarga + (combPouso * 17);
@@ -452,7 +462,6 @@
             const cgPouso = parseFloat(((momTotalPouso / law) * 20).toFixed(1));
 
             cgAtualGlobal = cgTow;
-            pesoTowGlobal = tow;
 
             document.getElementById('res-mzfw').innerText = mzfw.toLocaleString() + ' kg';
             document.getElementById('res-tow').innerText = tow.toLocaleString() + ' kg';
@@ -472,7 +481,7 @@
                 statusEl.className = 'status-ok';
             }
 
-            mudarAba('resultados');
+            mudarAbaTab('resultados');
         }
 
         function desenharEnvelope() {
@@ -480,11 +489,9 @@
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Desenhar fundo do envelope
             ctx.fillStyle = '#f8f9fa';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Polígono do Envelope (Esquemático)
             ctx.beginPath();
             ctx.strokeStyle = '#2c3e50';
             ctx.lineWidth = 2;
@@ -498,17 +505,14 @@
             ctx.fillStyle = 'rgba(39, 174, 96, 0.15)';
             ctx.fill();
 
-            // Rótulos do Gráfico
             ctx.fillStyle = '#333';
             ctx.font = '10px sans-serif';
             ctx.fillText('15% MAC', 20, 175);
             ctx.fillText('35% MAC', 245, 175);
             ctx.fillText('Limite Dianteiro / Traseiro', 80, 20);
 
-            // Plotar Ponto Atual
-            // Mapear cgAtualGlobal (15 a 35) para X (30 a 270)
             let posX = 30 + ((cgAtualGlobal - 15) / (35 - 15)) * (240);
-            let posY = 100; // Posição vertical proporcional ao peso
+            let posY = 100;
 
             ctx.beginPath();
             ctx.arc(posX, posY, 6, 0, 2 * Math.PI);
@@ -529,7 +533,7 @@
             const status = document.getElementById('status-guincho');
             resBox.style.display = 'block';
 
-            if(peso > 2268) { // 5000 lbs em kg aprox
+            if(peso > 2268) {
                 status.innerText = 'ATENÇÃO: Acima de 5.000 lbs requer sistema de reenvio (polia dupla)!';
                 status.style.color = 'var(--danger)';
             } else {
@@ -546,12 +550,11 @@
             const statPres = document.getElementById('status-pressao');
 
             resBox.style.display = 'block';
-            // kg / cm2 convertido para psi (1 kg/cm2 = 14.22 psi)
             const psi = (peso / area) * 14.22;
             valPres.innerText = psi.toFixed(2) + ' psi';
 
             if(psi > 3.5) {
-                statPres.innerText = 'EXCESSE LIMITES! Uso obrigatório de pranchamento (Dunnage).';
+                statPres.innerText = 'EXCESSO DE LIMITES! Uso obrigatório de pranchamento (Dunnage).';
                 statPres.style.color = 'var(--danger)';
             } else {
                 statPres.innerText = 'Pressão segura para o piso do compartimento.';
