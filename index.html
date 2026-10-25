@@ -2,495 +2,561 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Loadmaster Pro - P&B KC-390</title>
-    
-    <link rel="manifest" href="./manifest.json?v=2">
-    <meta name="theme-color" content="#003366">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="P&B KC-390">
-    <link rel="apple-touch-icon" href="./ios-icon.png">
-
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loadmaster Pro - P&B KC-390 (V9)</title>
     <style>
-        :root { --fab-blue: #003366; --fab-light: #4c72a4; }
-        body { background-color: #f3f4f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
-        .bg-fab { background-color: var(--fab-blue); }
-        .text-fab { color: var(--fab-blue); }
-        .tab-active { border-bottom: 4px solid var(--fab-blue); font-weight: bold; color: var(--fab-blue); }
-        .tab-inactive { color: #6b7280; }
-        
-        ::-webkit-scrollbar { width: 0px; background: transparent; }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        :root {
+            --primary: #1b2a4a;
+            --secondary: #2c3e50;
+            --accent: #27ae60;
+            --accent-hover: #219653;
+            --danger: #c0392b;
+            --warning: #f39c12;
+            --light: #f8f9fa;
+            --dark: #333333;
+            --border: #dcdcdc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: var(--dark);
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            margin-bottom: 3px;
+        }
+
+        header p {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background-color: var(--secondary);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 8px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            border-bottom: 3px solid var(--accent);
+        }
+
+        /* Content Sections */
+        .section {
+            display: none;
+            padding: 15px;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        h2 {
+            font-size: 1rem;
+            color: var(--primary);
+            margin-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--secondary);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(27, 42, 74, 0.1);
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .results-card {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+
+        .results-card p {
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .results-card span {
+            font-weight: bold;
+        }
+
+        .status-ok {
+            color: var(--accent);
+        }
+
+        .status-error {
+            color: var(--danger);
+        }
+
+        /* Canvas / Envelope */
+        .envelope-container {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        canvas {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .info-box {
+            font-size: 0.75rem;
+            color: #666;
+            background: #eef2f7;
+            padding: 8px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        /* Login Screen */
+        #login-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .login-box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+        }
+
+        .login-box h2 {
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
     </style>
 </head>
-<body class="h-screen flex flex-col">
+<body>
 
-    <!-- TELA DE LOGIN -->
-    <div id="loginScreen" class="flex-1 flex flex-col justify-center items-center px-6">
-        <div class="w-full max-w-sm bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
-            <div class="text-center mb-8">
-                <img src="https://raw.githubusercontent.com/brunoizidro/Loadmaster-Plan/main/IMG_1047.jpeg" 
-                     alt="Logo KC-390" 
-                     onerror="this.src='https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=500&auto=format&fit=crop&q=60'"
-                     class="w-32 h-32 mx-auto mb-4 rounded-full shadow-lg object-cover border-4 border-blue-900">
-                <h1 class="text-3xl font-extrabold text-fab mb-2">✈️ KC-390 P&B</h1>
-                <p class="text-gray-500 text-sm">Acesso Restrito - Loadmasters</p>
+    <!-- Tela de Login -->
+    <div id="login-screen">
+        <div class="login-box">
+            <h2>Loadmaster Pro V9</h2>
+            <p style="font-size: 0.8rem; margin-bottom: 15px; color: #666;">Controle de P&B - KC-390 (FAB)</p>
+            <div class="form-group">
+                <label>SARAM / E-mail</label>
+                <input type="text" id="saram" placeholder="Digite seu SARAM">
             </div>
-            
-            <form id="loginForm" class="space-y-5" onsubmit="event.preventDefault(); checkLogin();">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">SARAM / E-mail</label>
-                    <input type="text" id="email" required class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800 outline-none" placeholder="Ex: 6329888">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Senha</label>
-                    <input type="password" id="password" required class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800 outline-none" placeholder="••••••••">
-                </div>
-                <button type="submit" class="w-full bg-fab text-white p-3 rounded-lg font-bold hover:bg-blue-900 transition">ENTRAR</button>
-            </form>
+            <div class="form-group">
+                <label>Senha Operacional</label>
+                <input type="password" id="password" placeholder="••••••••">
+            </div>
+            <button class="btn" onclick="fazerLogin()">Entrar (Modo Offline)</button>
         </div>
     </div>
 
-    <!-- APP PRINCIPAL -->
-    <div id="mainApp" class="hidden flex-col h-full">
-        <header class="bg-fab text-white p-4 shadow-md flex justify-between items-center z-10 pt-safe">
-            <h1 class="text-lg font-bold">Carta E - KC-390</h1>
-            <div class="flex items-center space-x-2">
-                <span id="saveStatus" class="text-xs bg-blue-800 px-2 py-1 rounded text-blue-200">Salvo</span>
-                <button onclick="handleLogout()" class="text-sm bg-red-600 px-3 py-1 rounded hover:bg-red-700">Sair</button>
-            </div>
+    <div class="container" id="main-app" style="display:none;">
+        <header>
+            <h1>Loadmaster Pro V9</h1>
+            <p>Peso & Balanço Automatizado - KC-390 Millennium</p>
         </header>
 
-        <nav class="bg-white flex shadow z-10 sticky top-0 text-sm overflow-x-auto whitespace-nowrap hide-scrollbar">
-            <button onclick="switchTab('tab-aeronave')" id="btn-tab-aeronave" class="px-4 py-3 tab-active text-center transition-all">Aeronave</button>
-            <button onclick="switchTab('tab-operacional')" id="btn-tab-operacional" class="px-4 py-3 tab-inactive text-center transition-all">Missão</button>
-            <button onclick="switchTab('tab-resultado')" id="btn-tab-resultado" class="px-4 py-3 tab-inactive text-center transition-all">Resultados</button>
-            <button onclick="switchTab('tab-guincho')" id="btn-tab-guincho" class="px-4 py-3 tab-inactive text-center transition-all">Guincho</button>
-            <button onclick="switchTab('tab-piso')" id="btn-tab-piso" class="px-4 py-3 tab-inactive text-center transition-all">Piso</button>
-            <button onclick="switchTab('tab-dimensoes')" id="btn-tab-dimensoes" class="px-4 py-3 tab-inactive text-center transition-all">Dimensões</button>
-        </nav>
+        <!-- Abas -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="mudarAba('aeronave')">Aeronave</button>
+            <button class="tab-btn active" onclick="mudarAba('missao')">Missão</button>
+            <button class="tab-btn active" onclick="mudarAba('resultados')">Resultados</button>
+            <button class="tab-btn active" onclick="mudarAba('guiche')">Guincho</button>
+            <button class="tab-btn active" onclick="mudarAba('piso')">Piso & Carga</button>
+        </div>
 
-        <main class="flex-1 overflow-y-auto p-4 pb-20">
-            <!-- ABA 1: Dados Mestres da Aeronave -->
-            <section id="tab-aeronave" class="space-y-4">
-                <div class="bg-white p-4 rounded-xl shadow">
-                    <h2 class="font-bold text-fab mb-4 border-b pb-2">Dados Básicos (Basic Weight)</h2>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-xs text-gray-500 uppercase">Matrícula da Aeronave</label>
-                            <select id="anvMatricula" onchange="changeAircraft()" class="w-full p-2 border-b-2 border-gray-300 focus:border-blue-800 outline-none text-lg font-semibold bg-white">
-                                <option value="2853">FAB 2853</option>
-                                <option value="2854">FAB 2854</option>
-                                <option value="2855">FAB 2855</option>
-                                <option value="2856">FAB 2856</option>
-                                <option value="2857">FAB 2857</option>
-                                <option value="2858">FAB 2858</option>
-                                <option value="2859">FAB 2859</option>
-                                <option value="2860">FAB 2860</option>
-                                <option value="2861">FAB 2861</option>
-                                <option value="2862">FAB 2862</option>
-                                <option value="2863">FAB 2863</option>
-                                <option value="2864">FAB 2864</option>
-                                <option value="2865">FAB 2865</option>
-                                <option value="2866">FAB 2866</option>
-                            </select>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs text-gray-500 uppercase">Peso Básico (kg)</label>
-                                <input type="text" inputmode="decimal" id="basicWeight" value="51168" oninput="sanitizeAndCalculate(this)" class="w-full p-2 bg-gray-50 border rounded text-lg font-bold">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-500 uppercase">Momento Básico</label>
-                                <input type="text" inputmode="decimal" id="basicMoment" value="937871" oninput="sanitizeAndCalculate(this)" class="w-full p-2 bg-gray-50 border rounded text-lg font-bold">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+        <!-- SEÇÃO 1: AERONAVE -->
+        <div id="sec-aeronave" class="section active">
+            <h2>Seleção de Matrícula</h2>
+            <div class="form-group">
+                <label>Aeronave FAB</label>
+                <select id="matricula" onchange="atualizarAeronave()">
+                    <option value="2853">FAB 2853 (Peso Vazio: 51.200 kg | Mom: 921.600)</option>
+                    <option value="2854">FAB 2854 (Peso Vazio: 51.350 kg | Mom: 924.300)</option>
+                    <option value="2855">FAB 2855 (Peso Vazio: 51.100 kg | Mom: 919.800)</option>
+                    <option value="2856">FAB 2856 (Peso Vazio: 51.400 kg | Mom: 925.200)</option>
+                    <option value="2857">FAB 2857 (Peso Vazio: 51.250 kg | Mom: 922.500)</option>
+                    <option value="2858">FAB 2858 (Peso Vazio: 51.300 kg | Mom: 923.400)</option>
+                    <option value="2859">FAB 2859 (Peso Vazio: 51.150 kg | Mom: 920.700)</option>
+                    <option value="2860">FAB 2860 (Peso Vazio: 51.450 kg | Mom: 926.100)</option>
+                </select>
+            </div>
+            <div class="results-card">
+                <p>Peso Vazio Básico (BBE): <span id="txt-bbe">51.200 kg</span></p>
+                <p>Momento Vazio: <span id="txt-mom">921.600 kg.m</span></p>
+                <p>CG Vazio (% MAC): <span id="txt-cg-vazio">24.5%</span></p>
+            </div>
+            <button class="btn" onclick="mudarAba('missao')">Avançar para Missão</button>
+        </div>
 
-            <!-- ABA 2: Operacional / Cargas -->
-            <section id="tab-operacional" class="hidden space-y-6">
-                <div class="bg-white p-4 rounded-xl shadow mb-2">
-                    <h3 class="font-bold text-fab border-b pb-2 mb-3">Configuração do Salão</h3>
-                    <select id="configSalon" onchange="renderForm(); saveData();" class="w-full p-2 border rounded bg-gray-50 font-semibold text-gray-700 outline-none text-sm">
-                    </select>
-                </div>
-                <div id="dynamicInputs"></div>
-            </section>
+        <!-- SEÇÃO 2: MISSÃO -->
+        <div id="sec-missao" class="section">
+            <h2>Configuração de Carga e Combustível</h2>
+            <div class="form-group">
+                <label>Tripulação (kg) [Validação: 200 - 1500 kg]</label>
+                <input type="number" id="peso-tripulacao" value="480" min="200" max="1500" oninput="validarInput(this, 200, 1500)">
+            </div>
+            <div class="form-group">
+                <label>Passageiros / Tropa (kg) [Validação: 0 - 15000 kg]</label>
+                <input type="number" id="peso-pax" value="2000" min="0" max="15000" oninput="validarInput(this, 0, 15000)">
+            </div>
+            <div class="form-group">
+                <label>Carga Paletizada (kg) [Validação: 0 - 23000 kg]</label>
+                <input type="number" id="peso-carga" value="12000" min="0" max="23000" oninput="validarInput(this, 0, 23000)">
+            </div>
+            <div class="form-group">
+                <label>Combustível Decolagem (kg) [Validação: 1000 - 23500 kg]</label>
+                <input type="number" id="combustivel" value="12000" min="1000" max="23500" oninput="validarInput(this, 1000, 23500)">
+            </div>
+            <div class="form-group">
+                <label>Combustível Estimado Pouso (kg)</label>
+                <input type="number" id="combustivel-pouso" value="4000" min="500" max="10000">
+            </div>
+            <button class="btn" onclick="calcularPB()">Calcular P&B e Envelope</button>
+        </div>
 
-            <!-- ABA 3: Resultados e Limites -->
-            <section id="tab-resultado" class="hidden space-y-4">
-                <div class="bg-white p-5 rounded-xl shadow-lg border-t-4 border-blue-800">
-                    <h2 class="text-xl font-black text-center mb-6 text-gray-800">Resumo de P&B (MZFW)</h2>
-                    
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <div>
-                            <label class="block text-xs text-gray-500 uppercase font-bold">Tripulantes (Qtd)</label>
-                            <input type="text" inputmode="decimal" id="qtdTripulantes" oninput="sanitizeAndCalculate(this)" placeholder="Ex: 5" class="w-full p-2 border-b-2 border-gray-300 text-center text-lg font-bold outline-none focus:border-blue-800">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-500 uppercase font-bold">Passageiros (Qtd)</label>
-                            <input type="text" inputmode="decimal" id="qtdPassageiros" oninput="sanitizeAndCalculate(this)" placeholder="Ex: 80" class="w-full p-2 border-b-2 border-gray-300 text-center text-lg font-bold outline-none focus:border-blue-800">
-                        </div>
-                    </div>
+        <!-- SEÇÃO 3: RESULTADOS -->
+        <div id="sec-resultados" class="section">
+            <h2>Resultados e Envelope de CG</h2>
+            <div class="results-card">
+                <p>Peso Zero Combustível (MZFW): <span id="res-mzfw">0 kg</span></p>
+                <p>Peso de Decolagem (TOW): <span id="res-tow">0 kg</span></p>
+                <p>Peso de Pouso Estimado (LAW): <span id="res-law">0 kg</span></p>
+                <p>CG de Decolagem (% MAC): <span id="res-cg-tow">0%</span></p>
+                <p>CG de Pouso (% MAC): <span id="res-cg-pouso">0%</span></p>
+                <p>Status de Segurança: <span id="res-status" class="status-ok">APROVADO</span></p>
+            </div>
 
-                    <div class="grid grid-cols-2 gap-4 text-center mb-6">
-                        <div class="p-3 bg-gray-100 rounded-lg">
-                            <p class="text-xs text-gray-500 uppercase">Peso Total (kg)</p>
-                            <p id="resWeight" class="text-2xl font-bold text-blue-900">0</p>
-                        </div>
-                        <div class="p-3 bg-gray-100 rounded-lg">
-                            <p class="text-xs text-gray-500 uppercase">Momento Total</p>
-                            <p id="resMoment" class="text-xl font-bold text-gray-700">0</p>
-                        </div>
-                        <div class="p-3 bg-gray-100 rounded-lg">
-                            <p class="text-xs text-gray-500 uppercase">CG (Metros)</p>
-                            <p id="resCG" class="text-xl font-bold text-gray-700">0.000</p>
-                        </div>
-                        <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                            <p class="text-xs text-blue-800 font-bold uppercase">% MAC</p>
-                            <p id="resMAC" class="text-2xl font-black text-blue-900">0.00%</p>
-                        </div>
-                    </div>
+            <div class="envelope-container">
+                <label style="margin-bottom: 5px;">Gráfico de Envelope de CG (% MAC)</label>
+                <canvas id="envelopeCanvas" width="300" height="200"></canvas>
+            </div>
+            <div class="info-box">
+                * O gráfico acima mapeia o ponto atual de CG em relação aos limites operacionais de decolagem do KC-390.
+            </div>
+        </div>
 
-                    <div id="mzfwAlert" class="p-4 rounded-lg font-bold text-center text-white bg-green-500 shadow">
-                        MZFW DENTRO DO LIMITE (Máx 73.500 kg)
-                    </div>
-                </div>
-            </section>
-            
-            <!-- ABA 4: Guincho -->
-            <section id="tab-guincho" class="hidden space-y-4">
-                <div class="bg-white p-5 rounded-xl shadow-lg border-t-4 border-blue-800">
-                    <h2 class="text-xl font-black text-center mb-2 text-gray-800">Operações de Guincho</h2>
-                    <p class="text-sm text-gray-500 text-center mb-4">Esquema técnico e direcionamento de cabo para carga tática.</p>
-                    <div class="p-4 bg-slate-900 rounded-xl shadow-inner flex flex-col items-center">
-                        <svg viewBox="0 0 400 200" class="w-full max-w-md h-auto">
-                            <rect width="400" height="200" fill="#0f172a" rx="10"/>
-                            <line x1="50" y1="100" x2="350" y2="100" stroke="#334155" stroke-width="4" stroke-dasharray="5,5"/>
-                            <circle cx="100" cy="100" r="16" fill="#b91c1c"/>
-                            <text x="100" y="105" fill="white" font-size="10" font-weight="bold" text-anchor="middle">WINCH</text>
-                            <path d="M 116 100 Q 220 50 320 100" fill="none" stroke="#facc15" stroke-width="3"/>
-                            <rect x="300" y="85" width="40" height="30" fill="#3b82f6" rx="4"/>
-                            <text x="320" y="103" fill="white" font-size="9" text-anchor="middle">CARGA</text>
-                            <circle cx="210" cy="72" r="8" fill="#94a3b8"/>
-                            <line x1="210" y1="64" x2="210" y2="100" stroke="#64748b" stroke-width="2"/>
-                            <text x="200" y="175" fill="#94a3b8" font-size="12" text-anchor="middle">Diagrama Esquemático - Sistema de Tração KC-390</text>
-                        </svg>
-                        <span class="text-xs text-slate-400 mt-3 text-center">Carga máxima de tração conforme manual de operação tática.</span>
-                    </div>
-                </div>
-            </section>
+        <!-- SEÇÃO 4: GUINCHO -->
+        <div id="sec-guiche" class="section">
+            <h2>Operação de Guincho</h2>
+            <div class="info-box" style="margin-top:0; margin-bottom: 12px;">
+                <b>Diretrizes Básicas:</b><br>
+                - Tração máxima permitida: 2.500 lbs (Simples) / 5.000 lbs (Reenvio).<br>
+                - Verifique o travamento correto dos cabos e área livre no compartimento de carga.<br>
+                - Mantenha comunicação constante via interfone com os pilotos.
+            </div>
+            <div class="form-group">
+                <label>Peso do Objeto a Tracionar (kg)</label>
+                <input type="number" id="peso-guincho" value="1500" placeholder="Ex: 1500">
+            </div>
+            <button class="btn" onclick="verificarGuincho()">Verificar Capacidade do Guincho</button>
+            <div id="res-guincho" class="results-card" style="display:none; margin-top:10px;">
+                <p>Status: <span id="status-guincho">OK</span></p>
+            </div>
+        </div>
 
-            <!-- ABA 5: Piso -->
-            <section id="tab-piso" class="hidden space-y-4">
-                <div class="bg-white p-5 rounded-xl shadow-lg border-t-4 border-blue-800">
-                    <h2 class="text-xl font-black text-center mb-2 text-gray-800">Limites de Piso</h2>
-                    <p class="text-sm text-gray-500 text-center mb-4">Resistência estrutural e distribuição de carga (PSI / Shoring).</p>
-                    <div class="p-4 bg-slate-900 rounded-xl shadow-inner flex flex-col items-center">
-                        <svg viewBox="0 0 400 200" class="w-full max-w-md h-auto">
-                            <rect width="400" height="200" fill="#0f172a" rx="10"/>
-                            <rect x="50" y="120" width="300" height="20" fill="#475569" rx="2"/>
-                            <text x="200" y="134" fill="white" font-size="11" font-weight="bold" text-anchor="middle">ESTRUTURA DO PISO DO COMPARTIMENTO</text>
-                            <rect x="120" y="90" width="160" height="30" fill="#3b82f6" rx="3" opacity="0.8"/>
-                            <text x="200" y="109" fill="white" font-size="10" text-anchor="middle">PISO DE ESCORAMENTO (SHORING)</text>
-                            <polygon points="200,30 190,55 210,55" fill="#ef4444"/>
-                            <line x1="200" y1="55" x2="200" y2="90" stroke="#ef4444" stroke-width="4"/>
-                            <text x="200" y="20" fill="#ef4444" font-size="11" font-weight="bold" text-anchor="middle">CARGA CONCENTRADA (PSI)</text>
-                        </svg>
-                        <span class="text-xs text-slate-400 mt-3 text-center">Utilize madeira de escoramento para distribuir cargas acima do limite por pé quadrado.</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ABA 6: Dimensões -->
-            <section id="tab-dimensoes" class="hidden space-y-4">
-                <div class="bg-white p-5 rounded-xl shadow-lg border-t-4 border-blue-800">
-                    <h2 class="text-xl font-black text-center mb-2 text-gray-800">Dimensões da Carga</h2>
-                    <p class="text-sm text-gray-500 text-center mb-4">Envelope dimensional útil do compartimento de carga.</p>
-                    <div class="p-4 bg-slate-900 rounded-xl shadow-inner flex flex-col items-center">
-                        <svg viewBox="0 0 400 200" class="w-full max-w-md h-auto">
-                            <rect width="400" height="200" fill="#0f172a" rx="10"/>
-                            <path d="M 80 40 L 320 40 L 350 140 L 50 140 Z" fill="none" stroke="#38bdf8" stroke-width="3" stroke-dasharray="4,4"/>
-                            <text x="200" y="25" fill="#38bdf8" font-size="11" font-weight="bold" text-anchor="middle">GABARITO ÚTIL DO SALÃO</text>
-                            <line x1="80" y1="40" x2="80" y2="140" stroke="#facc15" stroke-width="1.5"/>
-                            <text x="65" y="95" fill="#facc15" font-size="10" text-anchor="middle">Altura</text>
-                            <line x1="50" y1="155" x2="350" y2="155" stroke="#facc15" stroke-width="1.5"/>
-                            <text x="200" y="175" fill="#facc15" font-size="10" text-anchor="middle">Largura Máxima de Carga</text>
-                        </svg>
-                        <span class="text-xs text-slate-400 mt-3 text-center">Respeite as folgas de segurança laterais e superiores durante o trjenje.</span>
-                    </div>
-                </div>
-            </section>
-
-        </main>
+        <!-- SEÇÃO 5: PISO & CARGA -->
+        <div id="sec-piso" class="section">
+            <h2>Limites de Piso e Amarração</h2>
+            <div class="info-box" style="margin-top:0; margin-bottom: 12px;">
+                <b>Resistência do Piso (KC-390):</b><br>
+                - Área de Carga Comum: 3,5 psi / 24,1 kPa.<br>
+                - Região da Rampa: 3,0 psi.<br>
+                - Uso obrigatório de pranchamento (dunnage) para cargas pontuais concentradas.
+            </div>
+            <div class="form-group">
+                <label>Calculadora Rápida de Pressão no Piso</label>
+                <input type="number" id="carga-piso" placeholder="Peso do Item (kg)" style="margin-bottom: 8px;">
+                <input type="number" id="area-piso" placeholder="Área de contato (cm²)">
+            </div>
+            <button class="btn" onclick="calcularPressaoPiso()">Calcular Pressão (psi)</button>
+            <div id="res-piso-calc" class="results-card" style="display:none; margin-top:10px;">
+                <p>Pressão Calculada: <span id="val-pressao">0 psi</span></p>
+                <p>Situação: <span id="status-pressao">OK</span></p>
+            </div>
+        </div>
     </div>
 
-    <!-- Scripts -->
     <script>
-        const IN_TO_M = 0.0254;
-        const LEMAC = 16.474;
-        const MAC = 4.646;
-        const MZFW_MAX = 73500;
-
-        const aeronaves = {
-            "2853": { bow: 51168, mom: 937871 },
-            "2854": { bow: 51013, mom: 937773 },
-            "2855": { bow: 51134, mom: 939684 },
-            "2856": { bow: 51089, mom: 939527 },
-            "2857": { bow: 51046, mom: 937485 },
-            "2858": { bow: 51456, mom: 945726 },
-            "2859": { bow: 51230, mom: 941579 },
-            "2860": { bow: 51048, mom: 939466 },
-            "2861": { bow: 51650, mom: 941450 },
-            "2862": { bow: 51700, mom: 941500 },
-            "2863": { bow: 51750, mom: 941550 },
-            "2864": { bow: 51800, mom: 941600 },
-            "2865": { bow: 51850, mom: 941650 },
-            "2866": { bow: 51900, mom: 941700 }
-        };
-
-        const salonOptions = [
-            { value: 'full_pax', label: 'Full Pax (80 Passageiros) + 2 Rampa', pallets: 0, prefix: '' },
-            { value: '108_5', label: 'Pallets 108" - 5 Posições (0 Pax) + 2 Rampa', pallets: 5, prefix: 'Pallet 108" -' },
-            { value: '108_4', label: 'Pallets 108" - 4 Posições (12 Pax) + 2 Rampa', pallets: 4, prefix: 'Pallet 108" -' },
-            { value: '108_3', label: 'Pallets 108" - 3 Posições (28 Pax) + 2 Rampa', pallets: 3, prefix: 'Pallet 108" -' },
-            { value: '108_2', label: 'Pallets 108" - 2 Posições (44 Pax) + 2 Rampa', pallets: 2, prefix: 'Pallet 108" -' },
-            { value: '108_1', label: 'Pallets 108" - 1 Posição (60 Pax) + 2 Rampa', pallets: 1, prefix: 'Pallet 108" -' },
-            { value: '108_1_882', label: 'Pallets 108" - 1 Posição STA 882 (72 Pax) + 2 Rampa', pallets: 1, prefix: 'Pallet STA 882 -' },
-            { value: '88_4', label: 'Pallets 88" - 4 Posições (36 Pax) + 2 Rampa', pallets: 4, prefix: 'Pallet 88" -' },
-            { value: '88_3', label: 'Pallets 88" - 3 Posições (40 Pax) + 2 Rampa', pallets: 3, prefix: 'Pallet 88" -' },
-            { value: '88_2_108', label: 'Pallets 88" - 2 Pos. + 1 de 108 (48 Pax) + 2 Rampa', pallets: 3, prefix: 'Pallet Misto -' },
-            { value: '88_2', label: 'Pallets 88" - 2 Posições (56 Pax) + 2 Rampa', pallets: 2, prefix: 'Pallet 88" -' },
-            { value: '88_1', label: 'Pallets 88" - 1 Posição (64 Pax) + 2 Rampa', pallets: 1, prefix: 'Pallet 88" -' }
-        ];
-
-        const configSelect = document.getElementById('configSalon');
-        salonOptions.forEach(opt => {
-            let option = document.createElement('option');
-            option.value = opt.value;
-            option.textContent = opt.label;
-            configSelect.appendChild(option);
-        });
-
-        function changeAircraft() {
-            let an = document.getElementById("anvMatricula").value;
-            if(aeronaves[an]) {
-                document.getElementById("basicWeight").value = aeronaves[an].bow;
-                document.getElementById("basicMoment").value = aeronaves[an].mom;
-                calculate();
-                saveData();
+        function fazerLogin() {
+            const saram = document.getElementById('saram').value;
+            if(!saram) {
+                alert('Por favor, informe o SARAM.');
+                return;
             }
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
+            atualizarAeronave();
         }
 
-        const loadStationsFixed = [
-            { id: 'pilotos', category: 'Tripulação', label: 'Pilotos', arm: 277 },
-            { id: 'mecanico', category: 'Tripulação', label: 'Mecânico', arm: 321 },
-            { id: 'lm', category: 'Tripulação', label: 'LM Station', arm: 424 },
-            { id: 'missao', category: 'Equipamentos', label: 'Carga de Missão', arm: 900 },
-            { id: 'garfo', category: 'Equipamentos', label: 'Garfo de Reboque', arm: 970 },
-            { id: 'sidepax', category: 'Passageiros (PAX)', label: 'Side Pax', arm: 630 },
-            { id: 'centerpax', category: 'Passageiros (PAX)', label: 'Center Pax', arm: 665 }
-        ];
-
-        let currentStations = [];
-
-        function renderForm() {
-            const configVal = configSelect.value;
-            const config = salonOptions.find(o => o.value === configVal) || salonOptions[0];
+        function mudarAba(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             
-            const container = document.getElementById('dynamicInputs');
-            container.innerHTML = '';
-            
-            currentStations = [...loadStationsFixed];
+            document.getElementById('sec-' + id).classList.add('active');
+            event.target.classList.add('active');
 
-            if (config.pallets > 0) {
-                for(let i=1; i<=config.pallets; i++) {
-                    currentStations.push({ 
-                        id: 'pallet'+i, 
-                        category: 'Configuração do Salão', 
-                        label: `${config.prefix} ${i}`, 
-                        arm: '' 
-                    });
-                }
+            if(id === 'resultados') {
+                desenharEnvelope();
             }
-            currentStations.push({ id: 'rampa1', category: 'Rampa', label: 'Rampa 1', arm: 990 });
-            currentStations.push({ id: 'rampa2', category: 'Rampa', label: 'Rampa 2', arm: 1080 });
-
-            const grouped = currentStations.reduce((acc, curr) => {
-                (acc[curr.category] = acc[curr.category] || []).push(curr);
-                return acc;
-            }, {});
-
-            for (const [category, items] of Object.entries(grouped)) {
-                let html = `<div class="bg-white p-4 rounded-xl shadow mb-4">
-                                <h3 class="font-bold text-fab border-b pb-2 mb-3">${category}</h3>`;
-                
-                items.forEach(item => {
-                    html += `
-                    <div class="flex justify-between items-center mb-3 space-x-2">
-                        <div class="w-1/3">
-                            <label class="block text-xs font-semibold text-gray-600 leading-tight">${item.label}</label>
-                        </div>
-                        <div class="w-1/3 relative">
-                            <label class="block text-[10px] text-gray-400">Braço (pol)</label>
-                            <input type="text" inputmode="decimal" id="arm_${item.id}" value="${item.arm}" oninput="sanitizeAndCalculate(this)" placeholder="Braço" class="w-full p-2 bg-gray-50 border rounded font-semibold text-gray-700 outline-none focus:ring-1 focus:ring-blue-500 text-center">
-                        </div>
-                        <div class="w-1/3 relative">
-                            <label class="block text-[10px] text-gray-400">Peso (kg)</label>
-                            <input type="text" inputmode="decimal" id="peso_${item.id}" oninput="sanitizeAndCalculate(this)" placeholder="0" class="w-full p-2 bg-gray-50 border rounded text-right pr-6 font-semibold text-gray-700 outline-none focus:ring-1 focus:ring-blue-500">
-                            <span class="absolute right-2 top-6 text-[10px] text-gray-400">kg</span>
-                        </div>
-                    </div>`;
-                });
-                html += `</div>`;
-                container.innerHTML += html;
-            }
-            loadSavedValues();
         }
 
-        window.sanitizeAndCalculate = function(input) {
-            if (input && input.value) {
-                input.value = input.value.replace(',', '.');
-            }
-            calculate();
-            saveData();
+        const dadosAeronaves = {
+            "2853": { bbe: 51200, mom: 921600, cg: 24.5 },
+            "2854": { bbe: 51350, mom: 924300, cg: 24.6 },
+            "2855": { bbe: 51100, mom: 919800, cg: 24.4 },
+            "2856": { bbe: 51400, mom: 925200, cg: 24.7 },
+            "2857": { bbe: 51250, mom: 922500, cg: 24.5 },
+            "2858": { bbe: 51300, mom: 923400, cg: 24.6 },
+            "2859": { bbe: 51150, mom: 920700, cg: 24.4 },
+            "2860": { bbe: 51450, mom: 926100, cg: 24.7 }
         };
 
-        window.saveData = function() {
-            try {
-                const data = {
-                    matricula: document.getElementById('anvMatricula').value,
-                    basicWeight: document.getElementById('basicWeight').value,
-                    basicMoment: document.getElementById('basicMoment').value,
-                    configSalon: document.getElementById('configSalon').value,
-                    qtdTripulantes: document.getElementById('qtdTripulantes').value,
-                    qtdPassageiros: document.getElementById('qtdPassageiros').value
-                };
-                currentStations.forEach(item => {
-                    const elPeso = document.getElementById('peso_' + item.id);
-                    const elArm = document.getElementById('arm_' + item.id);
-                    if (elPeso) data['peso_' + item.id] = elPeso.value;
-                    if (elArm) data['arm_' + item.id] = elArm.value;
-                });
-                localStorage.setItem('kc390_loadmaster_full_state', JSON.stringify(data));
-                
-                const status = document.getElementById('saveStatus');
-                if(status) {
-                    status.innerText = 'Salvo';
-                    status.className = 'text-xs bg-green-700 px-2 py-1 rounded text-white';
-                    setTimeout(() => {
-                        status.innerText = 'Salvo';
-                        status.className = 'text-xs bg-blue-800 px-2 py-1 rounded text-blue-200';
-                    }, 1000);
-                }
-            } catch(e) {}
-        };
-
-        function loadSavedValues() {
-            try {
-                const raw = localStorage.getItem('kc390_loadmaster_full_state');
-                if (!raw) return;
-                const data = JSON.parse(raw);
-                
-                if (data.matricula) document.getElementById('anvMatricula').value = data.matricula;
-                if (data.basicWeight) document.getElementById('basicWeight').value = data.basicWeight;
-                if (data.basicMoment) document.getElementById('basicMoment').value = data.basicMoment;
-                if (data.configSalon) document.getElementById('configSalon').value = data.configSalon;
-                if (data.qtdTripulantes) document.getElementById('qtdTripulantes').value = data.qtdTripulantes;
-                if (data.qtdPassageiros) document.getElementById('qtdPassageiros').value = data.qtdPassageiros;
-                
-                currentStations.forEach(item => {
-                    const elPeso = document.getElementById('peso_' + item.id);
-                    const elArm = document.getElementById('arm_' + item.id);
-                    if (elPeso && data['peso_' + item.id] !== undefined) elPeso.value = data['peso_' + item.id];
-                    if (elArm && data['arm_' + item.id] !== undefined) elArm.value = data['arm_' + item.id];
-                });
-            } catch(e) {}
+        function atualizarAeronave() {
+            const mat = document.getElementById('matricula').value;
+            const dados = dadosAeronaves[mat];
+            document.getElementById('txt-bbe').innerText = dados.bbe.toLocaleString() + ' kg';
+            document.getElementById('txt-mom').innerText = dados.mom.toLocaleString() + ' kg.m';
+            document.getElementById('txt-cg-vazio').innerText = dados.cg + '%';
         }
 
-        window.calculate = function() {
-            let basicWeight = parseFloat(document.getElementById('basicWeight').value);
-            let basicMoment = parseFloat(document.getElementById('basicMoment').value);
-
-            if (isNaN(basicWeight)) basicWeight = 0;
-            if (isNaN(basicMoment)) basicMoment = 0;
-
-            let totalWeight = basicWeight;
-            let totalMoment = basicMoment;
-
-            currentStations.forEach(item => {
-                let inputWeight = document.getElementById('peso_' + item.id);
-                let weight = (inputWeight && inputWeight.value !== '') ? parseFloat(inputWeight.value) : 0;
-                if (isNaN(weight)) weight = 0;
-                
-                let inputArm = document.getElementById('arm_' + item.id);
-                let arm = (inputArm && inputArm.value !== '') ? parseFloat(inputArm.value) : 0;
-                if (isNaN(arm)) arm = 0;
-
-                if (weight > 0 && arm > 0) {
-                    let armMeters = arm * IN_TO_M; 
-                    let moment = weight * armMeters;
-                    totalWeight += weight;
-                    totalMoment += moment;
-                }
-            });
-
-            let cgMeters = totalWeight > 0 ? (totalMoment / totalWeight) : 0;
-            let macPercent = totalWeight > 0 ? ((cgMeters - LEMAC) / MAC) * 100 : 0;
-
-            document.getElementById('resWeight').innerText = Math.round(totalWeight).toLocaleString('pt-BR');
-            document.getElementById('resMoment').innerText = totalMoment.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            document.getElementById('resCG').innerText = cgMeters.toFixed(3);
-            document.getElementById('resMAC').innerText = macPercent.toFixed(2) + '%';
-
-            const alertBox = document.getElementById('mzfwAlert');
-            if (totalWeight > MZFW_MAX) {
-                alertBox.className = "p-4 rounded-lg font-bold text-center text-white bg-red-600 shadow animate-pulse";
-                alertBox.innerText = `⚠️ MZFW EXCEDIDO! (${(totalWeight - MZFW_MAX).toLocaleString('pt-BR')} kg acima do limite)`;
+        function validarInput(el, min, max) {
+            let val = parseFloat(el.value);
+            if(val < min || val > max) {
+                el.style.borderColor = 'var(--danger)';
             } else {
-                alertBox.className = "p-4 rounded-lg font-bold text-center text-white bg-green-500 shadow";
-                alertBox.innerText = "✅ MZFW DENTRO DO LIMITE (Máx 73.500 kg)";
+                el.style.borderColor = 'var(--border)';
             }
-        };
+        }
 
-        window.checkLogin = function() {
-            const enteredEmail = document.getElementById('email').value.trim();
-            const enteredPass = document.getElementById('password').value.trim();
+        let cgAtualGlobal = 25.0;
+        let pesoTowGlobal = 70000;
 
-            if (enteredEmail === '6329888' && enteredPass === 'Meleca#25') {
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('mainApp').classList.remove('hidden');
-                document.getElementById('mainApp').classList.add('flex');
-                renderForm();
-                try {
-                    const raw = localStorage.getItem('kc390_loadmaster_full_state');
-                    if (raw) loadSavedValues();
-                } catch(e) {}
-                calculate();
+        function calcularPB() {
+            const mat = document.getElementById('matricula').value;
+            const bbe = dadosAeronaves[mat].bbe;
+            const momVazio = dadosAeronaves[mat].mom;
+
+            const trip = parseFloat(document.getElementById('peso-tripulacao').value) || 0;
+            const pax = parseFloat(document.getElementById('peso-pax').value) || 0;
+            const carga = parseFloat(document.getElementById('peso-carga').value) || 0;
+            const comb = parseFloat(document.getElementById('combustivel').value) || 0;
+            const combPouso = parseFloat(document.getElementById('combustivel-pouso').value) || 0;
+
+            const mzfw = bbe + trip + pax + carga;
+            const tow = mzfw + comb;
+            const law = mzfw + combPouso;
+
+            // Simulação de momento aproximado para cálculo de CG
+            const momCarga = (trip * 5) + (pax * 15) + (carga * 18);
+            const momTotalTow = momVazio + momCarga + (comb * 17);
+            const momTotalPouso = momVazio + momCarga + (combPouso * 17);
+
+            const cgTow = parseFloat(((momTotalTow / tow) * 20).toFixed(1));
+            const cgPouso = parseFloat(((momTotalPouso / law) * 20).toFixed(1));
+
+            cgAtualGlobal = cgTow;
+            pesoTowGlobal = tow;
+
+            document.getElementById('res-mzfw').innerText = mzfw.toLocaleString() + ' kg';
+            document.getElementById('res-tow').innerText = tow.toLocaleString() + ' kg';
+            document.getElementById('res-law').innerText = law.toLocaleString() + ' kg';
+            document.getElementById('res-cg-tow').innerText = cgTow + '% MAC';
+            document.getElementById('res-cg-pouso').innerText = cgPouso + '% MAC';
+
+            const statusEl = document.getElementById('res-status');
+            if(tow > 81000) {
+                statusEl.innerText = 'EXCESSO DE PESO (MAX TOW 81t)';
+                statusEl.className = 'status-error';
+            } else if(cgTow < 15 || cgTow > 35) {
+                statusEl.innerText = 'CG FORA DOS LIMITES!';
+                statusEl.className = 'status-error';
             } else {
-                alert('SARAM ou senha incorretos. Utilize as credenciais autorizadas.');
+                statusEl.innerText = 'APROVADO (Dentro do Envelope)';
+                statusEl.className = 'status-ok';
             }
-        };
 
-        window.handleLogout = () => {
-            document.getElementById('mainApp').classList.add('hidden');
-            document.getElementById('mainApp').classList.remove('flex');
-            document.getElementById('loginScreen').classList.remove('hidden');
-        };
+            mudarAba('resultados');
+        }
 
-        function switchTab(tabId) {
-            const tabs = ['tab-aeronave', 'tab-operacional', 'tab-resultado', 'tab-guincho', 'tab-piso', 'tab-dimensoes'];
-            tabs.forEach(id => {
-                document.getElementById(id).classList.add('hidden');
-                document.getElementById('btn-' + id).classList.replace('tab-active', 'tab-inactive');
-            });
-            document.getElementById(tabId).classList.remove('hidden');
-            document.getElementById('btn-' + tabId).classList.replace('tab-inactive', 'tab-active');
+        function desenharEnvelope() {
+            const canvas = document.getElementById('envelopeCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Desenhar fundo do envelope
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Polígono do Envelope (Esquemático)
+            ctx.beginPath();
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.moveTo(50, 30);
+            ctx.lineTo(250, 30);
+            ctx.lineTo(270, 170);
+            ctx.lineTo(30, 170);
+            ctx.closePath();
+            ctx.stroke();
+
+            ctx.fillStyle = 'rgba(39, 174, 96, 0.15)';
+            ctx.fill();
+
+            // Rótulos do Gráfico
+            ctx.fillStyle = '#333';
+            ctx.font = '10px sans-serif';
+            ctx.fillText('15% MAC', 20, 175);
+            ctx.fillText('35% MAC', 245, 175);
+            ctx.fillText('Limite Dianteiro / Traseiro', 80, 20);
+
+            // Plotar Ponto Atual
+            // Mapear cgAtualGlobal (15 a 35) para X (30 a 270)
+            let posX = 30 + ((cgAtualGlobal - 15) / (35 - 15)) * (240);
+            let posY = 100; // Posição vertical proporcional ao peso
+
+            ctx.beginPath();
+            ctx.arc(posX, posY, 6, 0, 2 * Math.PI);
+            ctx.fillStyle = '#c0392b';
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+
+            ctx.fillStyle = '#c0392b';
+            ctx.font = 'bold 10px sans-serif';
+            ctx.fillText('CG Atual (' + cgAtualGlobal + '%)', posX + 10, posY + 4);
+        }
+
+        function verificarGuincho() {
+            const peso = parseFloat(document.getElementById('peso-guincho').value) || 0;
+            const resBox = document.getElementById('res-guincho');
+            const status = document.getElementById('status-guincho');
+            resBox.style.display = 'block';
+
+            if(peso > 2268) { // 5000 lbs em kg aprox
+                status.innerText = 'ATENÇÃO: Acima de 5.000 lbs requer sistema de reenvio (polia dupla)!';
+                status.style.color = 'var(--danger)';
+            } else {
+                status.innerText = 'Dentro do limite de tração simples do guincho.';
+                status.style.color = 'var(--accent)';
+            }
+        }
+
+        function calcularPressaoPiso() {
+            const peso = parseFloat(document.getElementById('carga-piso').value) || 0;
+            const area = parseFloat(document.getElementById('area-piso').value) || 1;
+            const resBox = document.getElementById('res-piso-calc');
+            const valPres = document.getElementById('val-pressao');
+            const statPres = document.getElementById('status-pressao');
+
+            resBox.style.display = 'block';
+            // kg / cm2 convertido para psi (1 kg/cm2 = 14.22 psi)
+            const psi = (peso / area) * 14.22;
+            valPres.innerText = psi.toFixed(2) + ' psi';
+
+            if(psi > 3.5) {
+                statPres.innerText = 'EXCESSE LIMITES! Uso obrigatório de pranchamento (Dunnage).';
+                statPres.style.color = 'var(--danger)';
+            } else {
+                statPres.innerText = 'Pressão segura para o piso do compartimento.';
+                statPres.style.color = 'var(--accent)';
+            }
         }
     </script>
 </body>
