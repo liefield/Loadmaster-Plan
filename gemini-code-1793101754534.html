@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Loadmaster Pro - P&B KC-390</title>
+    
+    <meta name="theme-color" content="#b91c1c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="P&B KC-390">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { --fab-red: #b91c1c; --fab-red-light: #ef4444; }
+        body { background-color: #fef2f2; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
+        .bg-fab { background-color: var(--fab-red); }
+        .text-fab { color: var(--fab-red); }
+        .border-fab { border-color: var(--fab-red); }
+        .tab-active { border-bottom: 4px solid var(--fab-red); font-weight: bold; color: var(--fab-red); }
+        .tab-inactive { color: #9ca3af; }
+        
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="h-screen flex flex-col select-none">
+
+    <!-- TELA DE LOGIN -->
+    <div id="loginScreen" class="flex-1 flex flex-col justify-center items-center px-6">
+        <div class="w-full max-w-sm bg-white p-8 rounded-2xl shadow-xl border border-red-100">
+            <div class="text-center mb-8">
+                <img src="https://raw.githubusercontent.com/brunoizidro/Loadmaster-Plan/main/IMG_1047.jpeg" 
+                     alt="Logo KC-390" 
+                     onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'128\' height=\'128\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23b91c1c\' stroke-width=\'2\'><path d=\'M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z\'/></svg>'"
+                     class="w-28 h-28 mx-auto mb-4 rounded-full shadow-lg object-cover border-4 border-red-700 bg-red-50 p-2">
+                <h1 class="text-3xl font-extrabold text-fab mb-2">✈️ KC-390 P&B</h1>
+                <p class="text-gray-500 text-sm">Acesso Restrito - Loadmasters</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-5" onsubmit="event.preventDefault(); handleLogin();">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">SARAM / E-mail</label>
+                    <input type="text" id="email" required class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-700 outline-none" placeholder="Ex: 6329888">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Senha</label>
+                    <input type="password" id="password" required class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-700 outline-none" placeholder="••••••••">
+                </div>
+                <button type="submit" class="w-full bg-fab text-white p-3 rounded-lg font-bold hover:bg-red-800 transition shadow-md">ENTRAR</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- APLICATIVO PRINCIPAL -->
+    <div id="mainApp" class="hidden flex-col h-full">
+        <header class="bg-fab text-white p-4 shadow-md flex justify-between items-center z-10">
+            <h1 class="text-lg font-bold">Carta E - KC-390</h1>
+            <button onclick="handleLogout()" class="text-sm bg-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-800 transition font-medium">Sair</button>
+        </header>
+
+        <nav class="bg-white flex shadow z-10 sticky top-0 text-sm overflow-x-auto whitespace-nowrap hide-scrollbar">
+            <button onclick="switchTab('tab-aeronave')" id="btn-tab-aeronave" class="px-4 py-3 tab-active text-center transition-all">Aeronave</button>
+            <button onclick="switchTab('tab-operacional')" id="btn-tab-operacional" class="px-4 py-3 tab-inactive text-center transition-all">Missão</button>
+            <button onclick="switchTab('tab-resultado')" id="btn-tab-resultado" class="px-4 py-3 tab-inactive text-center transition-all">Resultados</button>
+            <button onclick="switchTab('tab-guincho')" id="btn-tab-guincho" class="px-4 py-3 tab-inactive text-center transition-all">Guincho</button>
+            <button onclick="switchTab('tab-piso')" id="btn-tab-piso" class="px-4 py-3 tab-inactive text-center transition-all">Piso</button>
+            <button onclick="switchTab('tab-dimensoes')" id="btn-tab-dimensoes" class="px-4 py-3 tab-inactive text-center transition-all">Dimensões</button>
+        </nav>
+
+        <main class="flex-1 overflow-y-auto p-4 pb-20">
+            <!-- ABA 1: Dados Mestres da Aeronave -->
+            <section id="tab-aeronave" class="space-y-4">
+                <div class="bg-white p-4 rounded-xl shadow border-l-4 border-fab">
+                    <h2 class="font-bold text-fab mb-4 border-b pb-2">Dados Básicos (Basic Weight)</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs text-gray-500 uppercase font-bold">Matrícula da Aeronave</label>
+                            <select id="anvMatricula" onchange="changeAircraft()" class="w-full p-2.5 border-b-2 border-gray-300 focus:border-red-700 outline-none text-lg font-black text-gray-800 bg-white">
+                                <option value="2853">FAB 2853</option>
+                                <option value="2854">FAB 2854</option>
+                                <option value="2855">FAB 2855</option>
+                                <option value="2856">FAB 2856</option>
+                                <option value="2857">FAB 2857</option>
+                                <option value="2858">FAB 2858</option>
+                                <option value="2859">FAB 2859</option>
+                                <option value="2860">FAB 2860</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs text-gray-500 uppercase font-bold">Peso Básico (kg)</label>
+                                <input type="number" id="basicWeight" value="51168" oninput="calculate()" class="w-full p-2.5 bg-gray-50 border rounded-lg text-lg font-bold text-gray-700 outline-none focus:ring-1 focus:ring-red-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 uppercase font-bold">Momento Básico</label>
+                                <input type="number" id="basicMoment" value="937871" oninput="calculate()" class="w-full p-2.5 bg-gray-50 border rounded-lg text-lg font-bold text-gray-700 outline-none focus:ring-1 focus:ring-red-500">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ABA 2: Operacional / Cargas -->
+            <section id="tab-operacional" class="hidden space-y-4">
+                <div class="bg-white p-4 rounded-xl shadow border-l-4 border-fab">
+                    <h3 class="font-bold text-fab border-b pb-2 mb-3">Tripulação e Passageiros</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs text-gray-500 uppercase font-bold">Tripulantes (Qtd)</label>
+                            <input type="number" id="inputTripulantes" min="0" oninput="syncPax()" placeholder="0" class="w-full p-2.5 border-b-2 border-gray-300 text-center text-lg font-bold outline-none focus:border-red-700 bg-red-50 rounded-t-lg">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-500 uppercase font-bold">Passageiros (Qtd)</label>
+                            <input type="number" id="inputPassageiros" min="0" oninput="syncPax()" placeholder="0" class="w-full p-2.5 border-b-2 border-gray-300 text-center text-lg font-bold outline-none focus:border-red-700 bg-red-50 rounded-t-lg">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl shadow border-l-4 border-fab">
+                    <h3 class="font-bold text-fab border-b pb-2 mb-3">Configuração do Salão</h3>
+                    <select id="configSalon" onchange="renderForm()" class="w-full p-3 border rounded-lg bg-gray-50 font-bold text-gray-800 outline-none text-sm focus:ring-2 focus:ring-red-700 cursor-pointer">
+                        <option value="padrao">Padrão Operacional</option>
+                        <option value="carga">Todo Carga (Pallets)</option>
+                        <option value="livre">Livre / Personalizado</option>
+                    </select>
+
+                    <div id="livreControls" class="hidden mt-4">
+                        <button onclick="addCustomStation()" class="w-full bg-red-100 text-red-800 border border-red-300 p-2.5 rounded-lg font-bold hover:bg-red-200 transition">
+                            + Adicionar Carga / Pallet
+                        </button>
+                    </div>
+                </div>
+
+                <div id="dynamicInputs" class="space-y-3"></div>
+            </section>
+
+            <!-- ABA 3: Resultados e Limites -->
+            <section id="tab-resultado" class="hidden space-y-4">
+                <div class="bg-white p-5 rounded-xl shadow-lg border-t-4 border-fab">
+                    <h2 class="text-xl font-black text-center mb-6 text-gray-800">Resumo de P&B (MZFW)</h2>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="p-3 bg-red-50 rounded-lg text-center border border-red-100">
+                            <p class="text-xs text-gray-500 uppercase font-bold">Tripulantes</p>
+                            <p id="resTripulantes" class="text-2xl font-black text-red-900">0</p>
+                        </div>
+                        <div class="p-3 bg-red-50 rounded-lg text-center border border-red-100">
+                            <p class="text-xs text-gray-500 uppercase font-bold">Passageiros</p>
+                            <p id="resPassageiros" class="text-2xl font-black text-red-900">0</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 text-center mb-6">
+                        <div class="p-3 bg-gray-100 rounded-lg shadow-inner">
+                            <p class="text-xs text-gray-500 uppercase font-bold">Peso Total (kg)</p>
+                            <p id="resWeight" class="text-2xl font-bold text-gray-900">0</p>
+                        </div>
+                        <div class="p-3 bg-gray-100 rounded-lg shadow-inner">
+                            <p class="text-xs text-gray-500 uppercase font-bold">Momento Total</p>
+                            <p id="resMoment" class="text-xl font-bold text-gray-700">0</p>
+                        </div>
+                        <div class="p-3 bg-gray-100 rounded-lg shadow-inner">
+                            <p class="text-xs text-gray-500 uppercase font-bold">CG (Metros)</p>
+                            <p id="resCG" class="text-xl font-bold text-gray-700">0.000</p>
+                        </div>
+                        <div class="p-3 bg-red-100 border border-red-200 rounded-lg shadow-inner">
+                            <p class="text-xs text-red-800 font-black uppercase">% MAC</p>
+                            <p id="resMAC" class="text-2xl font-black text-red-900">0.00%</p>
+                        </div>
+                    </div>
+
+                    <div id="mzfwAlert" class="p-4 rounded-lg font-bold text-center text-white bg-green-500 shadow-md transition-colors">
+                        MZFW DENTRO DO LIMITE (Máx 73.500 kg)
+                    </div>
+                </div>
+            </section>
+            
+            <!-- ABA 4: Guincho -->
+            <section id="tab-guincho" class="hidden space-y-4">
+                <div class="bg-white p-4 rounded-xl shadow-lg">
+                    <h2 class="text-lg font-black text-center mb-3 text-gray-800 border-b pb-2">Operações de Guincho</h2>
+                    <p class="text-sm text-gray-600">Parâmetros de tração, limites angulares do cabo e procedimentos de emergência do guincho do KC-390.</p>
+                </div>
+            </section>
+
+            <!-- ABA 5: Piso -->
+            <section id="tab-piso" class="hidden space-y-4">
+                <div class="bg-white p-4 rounded-xl shadow-lg">
+                    <h2 class="text-lg font-black text-center mb-3 text-gray-800 border-b pb-2">Limites de Piso</h2>
+                    <p class="text-sm text-gray-600">Tabela de escoramento, pressões admissíveis por área (PSI / kg/m²) e distribuição de cargas concentradas.</p>
+                </div>
+            </section>
+
+            <!-- ABA 6: Dimensões -->
+            <section id="tab-dimensoes" class="hidden space-y-4">
+                <div class="bg-white p-4 rounded-xl shadow-lg">
+                    <h2 class="text-lg font-black text-center mb-3 text-gray-800 border-b pb-2">Dimensões do Compartimento</h2>
+                    <p class="text-sm text-gray-600">Comprimento, largura, altura útil da rampa e gabaritos de acomodação de cargas e macas para evacuação aeromédica.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const aircraftWeights = {
+            "2853": { weight: 51168, moment: 937871 },
+            "2854": { weight: 51250, moment: 939000 },
+            "2855": { weight: 51100, moment: 937000 },
+            "2856": { weight: 51300, moment: 940000 },
+            "2857": { weight: 51150, moment: 937500 },
+            "2858": { weight: 51200, moment: 938200 },
+            "2859": { weight: 51180, moment: 938000 },
+            "2860": { weight: 51220, moment: 938500 }
+        };
+
+        function handleLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (email && password) {
+                // Correção: Removemos a tela de login e exibimos o app principal corretamente
+                document.getElementById('loginScreen').classList.add('hidden');
+                
+                const mainApp = document.getElementById('mainApp');
+                mainApp.classList.remove('hidden');
+                mainApp.classList.add('flex');
+                
+                loadSavedData();
+                calculate();
+            }
+        }
+
+        function handleLogout() {
+            const mainApp = document.getElementById('mainApp');
+            mainApp.classList.remove('flex');
+            mainApp.classList.add('hidden');
+            
+            document.getElementById('loginScreen').classList.remove('hidden');
+        }
+
+        function switchTab(tabId) {
+            ['tab-aeronave', 'tab-operacional', 'tab-resultado', 'tab-guincho', 'tab-piso', 'tab-dimensoes'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            ['btn-tab-aeronave', 'btn-tab-operacional', 'btn-tab-resultado', 'btn-tab-guincho', 'btn-tab-piso', 'btn-tab-dimensoes'].forEach(id => {
+                const btn = document.getElementById(id);
+                btn.classList.remove('tab-active');
+                btn.classList.add('tab-inactive');
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('tab-inactive');
+            activeBtn.classList.add('tab-active');
+        }
+
+        function changeAircraft() {
+            const mat = document.getElementById('anvMatricula').value;
+            if (aircraftWeights[mat]) {
+                document.getElementById('basicWeight').value = aircraftWeights[mat].weight;
+                document.getElementById('basicMoment').value = aircraftWeights[mat].moment;
+                calculate();
+            }
+        }
+
+        function syncPax() {
+            const trip = parseInt(document.getElementById('inputTripulantes').value) || 0;
+            const pax = parseInt(document.getElementById('inputPassageiros').value) || 0;
+            document.getElementById('resTripulantes').innerText = trip;
+            document.getElementById('resPassageiros').innerText = pax;
+            calculate();
+        }
+
+        function renderForm() {
+            const config = document.getElementById('configSalon').value;
+            const livreCtrl = document.getElementById('livreControls');
+            if (config === 'livre') {
+                livreCtrl.classList.remove('hidden');
+            } else {
+                livreCtrl.classList.add('hidden');
+            }
+            calculate();
+        }
+
+        function addCustomStation() {
+            const container = document.getElementById('dynamicInputs');
+            const div = document.createElement('div');
+            div.className = 'bg-white p-3 rounded-lg shadow border border-gray-200 flex gap-2 items-center';
+            div.innerHTML = `
+                <input type="text" placeholder="Nome Carga" class="w-1/3 p-2 border rounded text-sm outline-none">
+                <input type="number" placeholder="Peso (kg)" oninput="calculate()" class="w-1/3 p-2 border rounded text-sm outline-none weight-input">
+                <input type="number" placeholder="Momento" oninput="calculate()" class="w-1/3 p-2 border rounded text-sm outline-none moment-input">
+                <button onclick="this.parentElement.remove(); calculate();" class="text-red-600 font-bold px-2">✕</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function calculate() {
+            const bw = parseFloat(document.getElementById('basicWeight').value) || 0;
+            const bm = parseFloat(document.getElementById('basicMoment').value) || 0;
+            
+            const trip = (parseInt(document.getElementById('inputTripulantes').value) || 0) * 85; 
+            const tripMom = trip * 5.2; 
+
+            const pax = (parseInt(document.getElementById('inputPassageiros').value) || 0) * 90; 
+            const paxMom = pax * 15.5;
+
+            let totalW = bw + trip + pax;
+            let totalM = bm + tripMom + paxMom;
+
+            document.querySelectorAll('#dynamicInputs > div').forEach(row => {
+                const w = parseFloat(row.querySelector('.weight-input').value) || 0;
+                const m = parseFloat(row.querySelector('.moment-input').value) || 0;
+                totalW += w;
+                totalM += m;
+            });
+
+            const cg = totalW > 0 ? (totalM / totalW) : 0;
+            const mac = ((cg - 18.5) / 3.4) * 100; 
+
+            document.getElementById('resWeight').innerText = totalW.toLocaleString('pt-BR');
+            document.getElementById('resMoment').innerText = totalM.toLocaleString('pt-BR', {maximumFractionDigits: 0});
+            document.getElementById('resCG').innerText = cg.toFixed(3);
+            document.getElementById('resMAC').innerText = mac.toFixed(2) + '%';
+
+            const alertBox = document.getElementById('mzfwAlert');
+            if (totalW > 73500) {
+                alertBox.className = 'p-4 rounded-lg font-bold text-center text-white bg-red-600 shadow-md animate-pulse';
+                alertBox.innerText = '⚠️ ALERTA: MZFW ACIMA DO LIMITE (Máx 73.500 kg)!';
+            } else {
+                alertBox.className = 'p-4 rounded-lg font-bold text-center text-white bg-green-500 shadow-md';
+                alertBox.innerText = 'MZFW DENTRO DO LIMITE (Máx 73.500 kg)';
+            }
+
+            saveDataToLocalStorage();
+        }
+
+        function saveDataToLocalStorage() {
+            const data = {
+                matricula: document.getElementById('anvMatricula').value,
+                bw: document.getElementById('basicWeight').value,
+                bm: document.getElementById('basicMoment').value,
+                trip: document.getElementById('inputTripulantes').value,
+                pax: document.getElementById('inputPassageiros').value,
+                config: document.getElementById('configSalon').value
+            };
+            localStorage.setItem('loadmaster_kc390_data', JSON.stringify(data));
+        }
+
+        function loadSavedData() {
+            const saved = localStorage.getItem('loadmaster_kc390_data');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    document.getElementById('anvMatricula').value = data.matricula || '2853';
+                    document.getElementById('basicWeight').value = data.bw || '51168';
+                    document.getElementById('basicMoment').value = data.bm || '937871';
+                    document.getElementById('inputTripulantes').value = data.trip || '';
+                    document.getElementById('inputPassageiros').value = data.pax || '';
+                    document.getElementById('configSalon').value = data.config || 'padrao';
+                    syncPax();
+                } catch(e) {}
+            }
+        }
+    </script>
+</body>
+</html>
